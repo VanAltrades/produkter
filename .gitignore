@@ -1,0 +1,6 @@
+/venv
+dukt_sa.json
+cs_key.json
+gcp_service_account.json
+news_api_key.json
+__pycache__/
