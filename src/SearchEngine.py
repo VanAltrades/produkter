@@ -144,12 +144,73 @@ class SearchEngine:
             return None
         
     
+    def get_product_schema_value(schema, key):
+        # abstract schema extract function - not for use with nested keys
+        if schema[key] is not None:
+            value = schema['name']
+            return value
+        else:
+            return None
+
+
     def get_product_name(schema):
         if schema['name'] is not None:
             product_name = schema['name']
             return product_name
         else:
             return None
+    #    keys_to_extract = ['src']
+
+    #     # Create a list of dictionaries from nested keys
+    #     return [{key: result['pagemap']['cse_image'][0].get(key,None) for key in keys_to_extract} for result in serp_dicts]
+
+
+    def get_product_description(schema):
+        if schema['description'] is not None:
+            product_description = schema['description']
+            return product_description
+        else:
+            return None
+        
+    # https://schema.org/Product
+    ## id
+    # schema['productID']
+    # schema['sku']
+    # schema['gtin']['gtin12']['gtin13']['gtin14']['gtin8']
+    # schema['model']
+    # schema['mpn']
+    # schema['asin']
+    ## product
+    # schema['name']
+    # schema['description']
+    # schema['brand']['name']
+    # schema['manufacturer']
+    # schema['offers']['price']
+    # schema['image']
+    # schema['category']
+    ## niche
+    # schema['audience']
+    # schema['keywords']
+    # schema['slogan']
+    ## attributes
+    # schema['depth']
+    # schema['height']
+    # schema['width']
+    # schema['color']
+    # schema['weight']
+    # schema['material']
+    # schema['pattern']
+    # schema['size']
+    # schema['countryOfOrigin']
+    # schema['countryOfAssembly']
+    # schema['countryOfLastProcessing']
+    ## relation
+    # schema['isAccessoryOrSparePartFor']
+    # schema['isConsumableFor']
+    # schema['isRelatedTo']
+    # schema['isSimilarTo']
+    # schema['isVariantOf']
+
         
 
     def get_product_price(schema):
@@ -158,7 +219,36 @@ class SearchEngine:
             return product_price
         else:
             return None
-        
+
+
+    def get_product_taxonomy():
+        # BreadcrumbList > itemListElement > name*
+        return
+    
+    
+    def get_product_reviews():
+        # [aggregateRating][ratingValue] &
+        # review > *    
+        return
+
+
+    def get_product_availability(schema):
+        # availability (regex extract right of schema.org)
+        if schema['offers']['availability'] is not None:
+            avl = schema['offers']['availability']
+            return avl #TODO: regex only right of schema.org/
+        else:
+            return None
+
+
+    def get_product_returns():
+        # hasMerchantReturnPolicy > merchantReturnDays
+        return
+    
+
+    def get_product_related_products():
+        # [mainEntity][offers][itemOffered][rating,brand,description,image,name,offers,sku]
+        return
 
 se = SearchEngine()
 d = se.search('milwaukee m18 fuel')
