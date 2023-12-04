@@ -10,7 +10,7 @@
 
 ## TODO: new data structure
 
-"""
+```
 class CustomSearchAPI:
     def search(self, keyword):
         # Implementation of custom search API communication
@@ -60,7 +60,7 @@ class ProductInformationAPI:
 
     def get_product_information(self):
         return self.data_structure.product_info
-"""
+```
 
 **Base URL:**
 
