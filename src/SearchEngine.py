@@ -18,7 +18,11 @@ class SearchEngine:
         self.credentials = self.load_credentials(sa_credentials_path)
         self.service = build("customsearch", "v1", credentials=self.credentials)
         self.cx = self.load_cx(cx_path)
-        self.serp_dicts = None
+
+        # self.serp_dicts = None
+        self.serp_dicts = self.load_json_from_file("./data/se_results.json") # TESTING
+
+        self.serp_schema_dicts = None
         self.serp_url_dicts = None
 
         self.ua = UserAgent()
@@ -44,6 +48,13 @@ class SearchEngine:
     def save_to_json(data, output_file):
         with open(output_file, 'w') as json_file:
             json.dump(data, json_file, indent=2)
+
+
+    @staticmethod
+    def load_json_from_file(file_path):
+        with open(file_path, 'r') as file:
+            data = json.load(file)
+        return data
 
 
     @staticmethod
@@ -107,7 +118,7 @@ class SearchEngine:
 
 
     #  +-+-+-+
-    #  |u|r|l|
+    #  |u|r|l| 
     #  +-+-+-+
     def get_serp_links(self):
         try:
@@ -131,8 +142,10 @@ class SearchEngine:
             print(f"Failed to retrieve the page: \n{url}. \n\nStatus Code: {response.status_code}")
             return None
         
-    
-    def get_schema(soup):
+    #  +-+-+-+
+    #  |u|r|l| schema
+    #  +-+-+-+
+    def get_schema(self, soup):
         if soup is not None:
             soup_script = soup.find("script", {"type":"application/ld+json"})
             if soup_script is not None:
@@ -143,123 +156,149 @@ class SearchEngine:
         else:
             return None
         
+
+    def get_schema_dicts(self):
+        # links from serp
+        links = self.get_serp_links()
+
+        # collect schema json from each link and append to list
+        schema_dicts = []
+        for link in links:
+            soup = self.get_url_soup(link)
+            schema = self.get_schema(soup)
+            schema_dicts.append(schema)
+        self.serp_schema_dicts = schema_dicts
+        return schema_dicts
     
-    def get_product_schema_value(schema, key):
-        # abstract schema extract function - not for use with nested keys
-        if schema[key] is not None:
-            value = schema['name']
-            return value
-        else:
-            return None
+
+    def get_product_schema_nested_key_value(self, schema, *keys):
+        # abstract schema extract function
+        current_level = schema
+
+        for key in keys:
+            if current_level is not None and key in current_level:
+                current_level = current_level[key]
+            else:
+                return None
+
+        return "_".join(keys), current_level  # Concatenate keys into a single string
 
 
-    def get_product_name(schema):
-        if schema['name'] is not None:
-            product_name = schema['name']
-            return product_name
-        else:
-            return None
-    #    keys_to_extract = ['src']
+    def get_product_schema_item_dicts(self, schema_dicts, *keys):
+        item_dicts = []
+        for schema in schema_dicts:
+            result = self.get_product_schema_nested_key_value(schema, *keys)
+            key, value = result if result is not None else ("_".join(keys), None) # remove else if only want non-None
+            item_dict = {key: value}
+            item_dicts.append(item_dict)
+        return item_dicts
+    
 
-    #     # Create a list of dictionaries from nested keys
-    #     return [{key: result['pagemap']['cse_image'][0].get(key,None) for key in keys_to_extract} for result in serp_dicts]
+    ## logic check ##
+    def all_values_none(list_of_dicts):
+        # Check if all values in all dictionaries are None - True if all None
+        return all(all(value is None for value in d.values()) for d in list_of_dicts)
+
+    ## filter ##
+    def filter_dicts_with_values(list_of_dicts):
+        # Filter dictionaries to include only those with values not equal to None
+        return [d for d in list_of_dicts if any(value is not None for value in d.values())]
 
 
-    def get_product_description(schema):
-        if schema['description'] is not None:
-            product_description = schema['description']
-            return product_description
-        else:
-            return None
+
+    def get_url_schema_dicts(self, schema_dicts):
+        # returns a list of url schema dicts with only desired keys
+        # https://schema.org/Product
+        schema_keys = [
+            # id
+            'productID','sku','gtin','gtin8','gtin12','gtin13','model','mpn','asin',
+            # product
+            'name', 'description',['brand', 'name'],'manufacturer','image','category',['offers','price'],['offers','availability'], # TODO: strip("https://schema.org/","")
+            # niche
+            'audience','keywords','slogan',['hasMerchantReturnPolicy','merchantReturnDays'], # TODO: confirm
+            # taxonomy
+            ['BreadcrumbList','itemListElement','name'], #TODO: confirm 
+            # reviews
+            ['aggregateRating','ratingValue'],'review',
+            # attributes
+            'depth','height','width','color','weight','material','pattern','size','countryOfOrigin','countryOfAssembly','countryOfLastProcessing',
+            # relation
+            'isAccessoryOrSparePartFor','isConsumableFor','isRelatedTo','isSimilarTo','isVariantOf',['mainEntity','offers','itemOffered']
+        ]
         
-    # https://schema.org/Product
-    ## id
-    # schema['productID']
-    # schema['sku']
-    # schema['gtin']['gtin12']['gtin13']['gtin14']['gtin8']
-    # schema['model']
-    # schema['mpn']
-    # schema['asin']
-    ## product
-    # schema['name']
-    # schema['description']
-    # schema['brand']['name']
-    # schema['manufacturer']
-    # schema['offers']['price']
-    # schema['image']
-    # schema['category']
-    ## niche
-    # schema['audience']
-    # schema['keywords']
-    # schema['slogan']
-    ## attributes
-    # schema['depth']
-    # schema['height']
-    # schema['width']
-    # schema['color']
-    # schema['weight']
-    # schema['material']
-    # schema['pattern']
-    # schema['size']
-    # schema['countryOfOrigin']
-    # schema['countryOfAssembly']
-    # schema['countryOfLastProcessing']
-    ## relation
-    # schema['isAccessoryOrSparePartFor']
-    # schema['isConsumableFor']
-    # schema['isRelatedTo']
-    # schema['isSimilarTo']
-    # schema['isVariantOf']
-
+        url_schema_dicts = []
         
-
-    def get_product_price(schema):
-        if schema['offers']['price'] is not None:
-            product_price = schema['offers']['price']
-            return product_price
-        else:
-            return None
-
-
-    def get_product_taxonomy():
-        # BreadcrumbList > itemListElement > name*
-        return
-    
-    
-    def get_product_reviews():
-        # [aggregateRating][ratingValue] &
-        # review > *    
-        return
+        for key in schema_keys:
+            if type(key) == str:
+                url_schema_dict = self.get_product_schema_item_dicts(schema_dicts,key)
+            else:
+                url_schema_dict = self.get_product_schema_item_dicts(schema_dicts,*key)
+            url_schema_dicts.append(url_schema_dict)
+        
+        self.serp_url_dicts = url_schema_dicts
+        return url_schema_dicts
 
 
-    def get_product_availability(schema):
-        # availability (regex extract right of schema.org)
-        if schema['offers']['availability'] is not None:
-            avl = schema['offers']['availability']
-            return avl #TODO: regex only right of schema.org/
-        else:
-            return None
+    def list_schema_keys(self):
+        # Flatten the list of lists
+        flat_list = [item for sublist in self.serp_url_dicts for item in sublist]
+
+        # Get all distinct keys
+        distinct_keys = set(key for item in flat_list for key in item.keys())
+
+        print(distinct_keys)
 
 
-    def get_product_returns():
-        # hasMerchantReturnPolicy > merchantReturnDays
-        return
+    def get_schema_key(self, key):
+        # Flatten the list of lists
+        flat_list = [item for sublist in self.serp_url_dicts for item in sublist]
+
+        # Filter dictionaries with a non-None 'name' value
+        filtered_dicts = [item for item in flat_list if item.get('name') is not None]
+
+        result_dict = {key: [item[key] for item in filtered_dicts]}
+        return result_dict
     
 
-    def get_product_related_products():
-        # [mainEntity][offers][itemOffered][rating,brand,description,image,name,offers,sku]
-        return
+    #  +-+-+-+
+    #  |u|r|l| corpus
+    #  +-+-+-+
+    
+
 
 se = SearchEngine()
 d = se.search('milwaukee m18 fuel')
 
 # serp level
-serp_dicts = se.load_serp_dicts(d)
-se.save_to_json(serp_dicts,"./data/serp_dicts.json")
+# serp_dicts = se.load_serp_dicts(d)
+# se.save_to_json(serp_dicts,"./data/serp_dicts.json")
 
-serp_dicts = se.get_serp_focus(serp_dicts) # TODO: remove serp_dicts arg and use self.serp_dicts
-se.save_to_json(serp_dicts,"./data/serp_dicts_focus.json")
+# se rp_dicts = se.get_serp_dicts(serp_dicts) # TODO: remove serp_dicts arg and use self.serp_dicts
+# se.save_to_json(serp_dicts,"./data/serp_dicts_focus.json")
 
-# url level
+# TEST EXAMPLE of above code ^
+serp_dicts = se.serp_dicts
+schema_dicts = se.get_schema_dicts()
+
+
+# serp url level
 links = se.get_serp_links()
-# se.get_url_soup()
+
+schema_dicts = se.get_schema_dicts(links)
+
+i = se.get_product_schema_item_dicts(schema_dicts,"name")
+
+# below should encompass all of above code
+serp_url_dicts = se.get_url_schema_dicts(schema_dicts)
+
+# THE CODE HERE SHOULD PROBABLY RUN AUTOMATICALLY AND 
+# POPULATE INSTANCE VARIABLES.
+# THIS WILL ALLOW THE CLASS TO WORK MORE WITH 
+# get_schema(key) AND RETURN items() FOR OTHER
+# API RESPONSES.
+
+se.list_keys()
+
+product_names = se.get_schema_key("name")
+product_price = se.get_schema_key('offers_availability')
+product_price = se.get_schema_key('mainEntity_offers_itemOffered')
