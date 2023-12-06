@@ -8,6 +8,60 @@
 
 `https://console.cloud.google.com/apis/library/customsearch.googleapis.com`
 
+## TODO: new data structure
+
+```
+class CustomSearchAPI:
+    def search(self, keyword):
+        # Implementation of custom search API communication
+        return product_info_json
+
+class WebScraping:
+    def scrape_websites(self, links):
+        # Implementation of web scraping to extract additional product information
+        return extended_product_info_json
+
+class PDFProcessing:
+    def process_pdfs(self, pdf_links, file_type_filter):
+        # Implementation of PDF processing to extract information
+        return pdf_product_info_json
+
+class NLPProcessing:
+    def apply_nlp(self, product_info):
+        # Implementation of NLP to enhance product information
+        return nlp_enhanced_product_info
+
+class VertexAIIntegration:
+    def apply_vertex_ai(self, product_info):
+        # Implementation of Vertex AI integration
+        return ai_enhanced_product_info
+
+class DataStructure:
+    def __init__(self):
+        self.product_info = {}
+
+class ProductInformationAPI:
+    def __init__(self):
+        self.custom_search_api = CustomSearchAPI()
+        self.web_scraping = WebScraping()
+        self.pdf_processing = PDFProcessing()
+        self.nlp_processing = NLPProcessing()
+        self.vertex_ai_integration = VertexAIIntegration()
+        self.data_structure = DataStructure()
+
+    def process_product_information(self, keyword):
+        self.data_structure.product_info = self.custom_search_api.search(keyword)
+        website_info = self.web_scraping.scrape_websites(self.data_structure.product_info['links'])
+        pdf_info = self.pdf_processing.process_pdfs(self.data_structure.product_info['pdf_links'], 'type_filter')
+        self.data_structure.product_info.update(website_info)
+        self.data_structure.product_info.update(pdf_info)
+        self.data_structure.product_info = self.nlp_processing.apply_nlp(self.data_structure.product_info)
+        self.data_structure.product_info = self.vertex_ai_integration.apply_vertex_ai(self.data_structure.product_info)
+
+    def get_product_information(self):
+        return self.data_structure.product_info
+```
+
 **Base URL:**
 
 `https://www.googleapis.com/customsearch/v1`
