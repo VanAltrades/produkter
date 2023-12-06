@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="jdRHtnWy5qMeUCZGTKi8" name="Page-1">
-        <mxGraphModel dx="946" dy="2664" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+        <mxGraphModel dx="3420" dy="2499" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -159,13 +159,13 @@
                 <mxCell id="58" value="use AI functions here" style="rounded=1;whiteSpace=wrap;html=1;strokeColor=#FFFFFF;strokeWidth=1;" parent="1" vertex="1">
                     <mxGeometry x="1790" y="310" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="59" value="&lt;h1&gt;TODO: ProductInsight&lt;/h1&gt;&lt;p&gt;ex: 20% of competitors include these attributes, 0% include audience so use this...&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;strokeWidth=1;" vertex="1" parent="1">
+                <mxCell id="59" value="&lt;h1&gt;TODO: ProductInsight&lt;/h1&gt;&lt;p&gt;ex: 20% of competitors include these attributes, 0% include audience so use this...&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;serp_url_dicts and their None values will be useful here.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;strokeWidth=1;" parent="1" vertex="1">
                     <mxGeometry x="1700" y="492.27" width="470" height="120" as="geometry"/>
                 </mxCell>
-                <mxCell id="60" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#FFFF00;" vertex="1" parent="1">
+                <mxCell id="60" value="" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#FFFF00;" parent="1" vertex="1">
                     <mxGeometry x="390" y="-510" width="710" height="510" as="geometry"/>
                 </mxCell>
-                <mxCell id="61" value="&lt;h1&gt;URL PDF LEVEL&lt;/h1&gt;&lt;p&gt;get a list of pdf links&lt;/p&gt;&lt;p&gt;i:search(pdf modifier)&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+                <mxCell id="61" value="&lt;h1&gt;URL PDF LEVEL&lt;/h1&gt;&lt;p&gt;get a list of pdf links&lt;/p&gt;&lt;p&gt;i:search(pdf modifier)&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="416" y="-485" width="344" height="120" as="geometry"/>
                 </mxCell>
             </root>
