@@ -44,7 +44,18 @@ def calculate_confidence_for_phrases(text_corpus, keyword_phrases):
     return confidence_scores
 
 # Example usage with a list of keyword phrases
-# text_corpus = "Your text corpus goes here."
+text_corpus = """Browse our exclusive collection of auto accessories that includes top quality products to enhance the style, comfort and functionality of your vehicle. We provide one stop shop for the perfect auto accessories for the vehicle.
+Features
+RV Siding Mesa
+High quality construction and durability
+Variety of styles for every type of accessory
+4 Piece
+Specifications
+Design: Mesa
+Length: 16 in.
+Width: 96 in.
+Color: Polar White
+Material: Aluminum"""
 # keyword_phrases = ["example keyword", "another phrase"]
 # confidence_scores = calculate_confidence_for_phrases(text_corpus, keyword_phrases)
 

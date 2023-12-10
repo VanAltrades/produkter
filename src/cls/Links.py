@@ -112,7 +112,9 @@ class Links:
             schema['offers_price'] = offers_price
 
             offers_availability = self.safe_get(sch, 'offers', 'availability', default=None) 
-            schema['offers_availability'] = offers_availability.replace('http://schema.org/','')
+            if offers_availability is not None:
+                offers_availability = offers_availability.replace('http://schema.org/','')
+            schema['offers_availability'] = offers_availability
 
             # niche
             audience = self.safe_get(sch, 'audience', default=None) 
@@ -204,9 +206,14 @@ class Links:
             text = {}
 
             soup = self.get_url_soup(link)
-            text = soup.get_text()
-
-            texts[i] = text
+            if soup is not None:
+                text = soup.get_text()
+                text = text.replace("\n"," ")
+                text = text.replace("\r"," ")
+                text = text.replace("\t"," ")
+                texts[i] = text
+            else:
+                texts[i] = None
 
         self.texts = texts
         return texts
