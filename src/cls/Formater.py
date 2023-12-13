@@ -3,7 +3,7 @@ class Formater:
     def __init__(self, dictionary):
         
         self.dictionary = dictionary
-        self.reponse = None
+        self.response = None
 
     
     def format(self, keep_none_values=True):
