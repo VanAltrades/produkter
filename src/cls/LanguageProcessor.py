@@ -13,13 +13,6 @@ class LanguageProcessor:
         self.nlp = spacy.load("en_core_web_sm")
         self.dictionary = dictionary
 
-    def extract_attributes(self, corpus):
-        corpus_load = self.nlp(corpus)
-        attributes = {ent.label_: ent.text for ent in corpus_load.ents}
-        print(attributes)
-
-    # extract_attributes(corpus = "The product has a red color, large size, and costs $20.")
-
 
     def extract_item_type(self, product_title):
         doc = self.nlp(product_title)
@@ -34,10 +27,13 @@ class LanguageProcessor:
 
         return None
     
-    # # Extracting item types for each product title
-    # for title in product_titles:
-    #     item_type = extract_item_type(title)
-    #     print(f"Product Title: {title}\nItem Type: {item_type}\n")
+
+    def extract_attributes(self, corpus):
+        corpus_load = self.nlp(corpus)
+        attributes = {ent.label_: ent.text for ent in corpus_load.ents}
+        print(attributes)
+
+    # extract_attributes(corpus = "The product has a red color, large size, and costs $20.")
 
 
     def calculate_confidence_score(self, text_corpus, keyword_phrases):
@@ -64,3 +60,24 @@ class LanguageProcessor:
             confidence_scores[phrase] = confidence_score
 
         return confidence_scores
+    
+
+# # Example usage with a list of keyword phrases
+# text_corpus = """Browse our exclusive collection of auto accessories that includes top quality products to enhance the style, comfort and functionality of your vehicle. We provide one stop shop for the perfect auto accessories for the vehicle.
+# Features
+# RV Siding Mesa
+# High quality construction and durability
+# Variety of styles for every type of accessory
+# 4 Piece
+# Specifications
+# Design: Mesa
+# Length: 16 in.
+# Width: 96 in.
+# Color: Polar White
+# Material: Aluminum"""
+# keyword_phrases = ["example keyword", "another phrase"]
+# confidence_scores = calculate_confidence_for_phrases(text_corpus, keyword_phrases)
+
+# # Print confidence scores for each keyword phrase
+# for phrase, score in confidence_scores.items():
+#     print(f"Confidence score for '{phrase}': {score}")

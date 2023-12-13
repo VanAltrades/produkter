@@ -1,7 +1,12 @@
 from cls.EngineRanks import Engine, Ranks
 from cls.Links import Links
-from cls.Formater import Formater
 from cls.EnginePdfs import PdfEngine, PdfRanks
+from cls.LanguageProcessor import LanguageProcessor
+from cls.Suggestions import Suggestions
+from cls.Trends import Trends
+
+from cls.Formater import Formater
+
 
 # Engine Ranks
 engine_instance = Engine("milwaukee m18 fuel")

@@ -1,21 +1,18 @@
 from flask import Flask, request, jsonify
-from SearchEngine import SearchEngine
+from cls.EngineRanks import Engine, Ranks
 
 app = Flask(__name__)
 
-se = SearchEngine()
+@app.route('/ranks', methods=['GET'])
+def ranks():
+    # http://127.0.0.1:5000/ranks?product=milwaukee%20m18%20fuel
+    product = request.args.get('product')  # Get the 'product_' parameter from the query string
+    if not product:
+        return jsonify({'error': 'Product parameter is missing'}), 400
 
-@app.route('/search', methods=['GET'])
-def search():
-    keyword = request.args.get('keyword')
-    if not keyword:
-        return jsonify({'error': 'Missing keyword parameter'}), 400
-
-    # Perform the search and convert the result to a DataFrame
-    search_results_df = se.search(keyword)
-
-    # Convert the DataFrame to JSON and return the response
-    return search_results_df.to_json(orient='records')
+    engine_instance = Engine(product)
+    rank_instance = Ranks(engine_instance)
+    return rank_instance.ranks
 
 if __name__ == '__main__':
     app.run(debug=True)
