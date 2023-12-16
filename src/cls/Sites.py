@@ -4,14 +4,16 @@ from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 import json
 
-class Links:
-    def __init__(self, rank_instance):
-        # Assuming rank_instance is an instance of the rank class
-        self.links = [item['link'] if 'link' in item else None for item in rank_instance.ranks.values()]
+class Sites:
+    def __init__(self, search_dictionary_instance):
+        # Assuming search_dictionary_instance is an instance of the rank class
+        self.links = [item['link'] if 'link' in item else None for item in search_dictionary_instance.dictionary.values()]
+        self.titles = [item['title'] if 'title' in item else None for item in search_dictionary_instance.dictionary.values()]
+
         self.ua = UserAgent()
         
-        self.schemas = self.get_schema_dict()
-        self.texts = self.get_text_dict()
+        self.dictionary_schemas = self.get_schema_dict()
+        self.dictionary_texts = self.get_text_dict()
 
     def get_url_soup(self, url):
         headers = {'User-Agent': self.ua.random}
@@ -195,12 +197,11 @@ class Links:
 
             schemas[i] = schema
         
-        self.schemas = schemas
         return schemas
     
 
     def get_text_dict(self):
-        # collect schema json from each link and append to list
+        # collect soup text from each link and append to list
         texts = {}
         for i, link in enumerate(self.links):
             text = {}
@@ -215,5 +216,4 @@ class Links:
             else:
                 texts[i] = None
 
-        self.texts = texts
         return texts

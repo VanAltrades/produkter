@@ -15,8 +15,6 @@ class PdfEngine:
 
         self.engine = None
         self.results = self.search(query, **enginekwargs)
-        # self.results = self.load_json_from_file("./data/se_results.json") # TESTING
-
 
     @staticmethod
     def load_credentials(sa_credentials_path):
@@ -70,12 +68,12 @@ class PdfEngine:
 
     
 
-class PdfRanks:
+class PdfDictionary:
     def __init__(self, engine_instance):
         # Assuming engine_instance is an instance of the Engine class
         self.results = engine_instance.results
-        self.ranks = self.get_ranks_dict()
-        # You can now use self.results in the Rank class or perform additional operations.
+        self.dictionary = self.get_dictionary_dict()
+
 
     #  +-+-+-+-+
     #  |s|e|r|p|
@@ -91,8 +89,9 @@ class PdfRanks:
                 return default
         return dictionary
 
-    def get_ranks_dict(self):
-        ranks = {}
+
+    def get_dictionary_dict(self):
+        dictionary = {}
         
         for i, result in enumerate(self.results):
             rank = {}
@@ -124,9 +123,7 @@ class PdfRanks:
             image2 = self.safe_get(result, 'pagemap', 'cse_image', 0, 'src', default=None)
             rank['image2'] = image2
 
-            ranks[i] = rank
+            dictionary[i] = rank
 
-        self.ranks = ranks
-        return ranks
-
-
+        self.dictionary = dictionary
+        return dictionary

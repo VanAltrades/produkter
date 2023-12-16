@@ -12,11 +12,10 @@ class Engine:
         self.credentials = self.load_credentials(sa_credentials_path)
         self.service = build("customsearch", "v1", credentials=self.credentials)
         self.cx = self.load_cx(cx_path)
+        self.keyword = query
 
         self.engine = None
         self.results = self.search(query, **enginekwargs)
-        # self.results = self.load_json_from_file("./data/se_results.json") # TESTING
-
 
     @staticmethod
     def load_credentials(sa_credentials_path):
@@ -69,11 +68,11 @@ class Engine:
 
     
 
-class Ranks:
+class SearchDictionary:
     def __init__(self, engine_instance):
         # Assuming engine_instance is an instance of the Engine class
         self.results = engine_instance.results
-        self.ranks = self.get_ranks_dict()
+        self.dictionary = self.get_dictionary_dict()
         # You can now use self.results in the Rank class or perform additional operations.
 
     #  +-+-+-+-+
@@ -90,8 +89,8 @@ class Ranks:
                 return default
         return dictionary
 
-    def get_ranks_dict(self):
-        ranks = {}
+    def get_dictionary_dict(self):
+        dictionary = {}
         
         for i, result in enumerate(self.results):
             rank = {}
@@ -139,10 +138,10 @@ class Ranks:
             image2 = self.safe_get(result, 'pagemap', 'cse_image', 0, 'src', default=None)
             rank['image2'] = image2
 
-            ranks[i] = rank
+            dictionary[i] = rank
 
-        self.ranks = ranks
-        return ranks
+        self.dictionary = dictionary
+        return dictionary
 
 
 
@@ -151,7 +150,7 @@ class Ranks:
 # engine_instance = Engine("AMD Ryzen 9 5900X")
 
 # # Create an instance of Rank and automatically pass the results
-# rank_instance = Ranks(engine_instance)
+# rank_instance = SearchDictionary(engine_instance)
 
 # # Now you can access rank_instance.results
 # print(rank_instance.results)

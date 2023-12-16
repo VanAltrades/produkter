@@ -1,11 +1,11 @@
-from cls.EngineRanks import Engine, Ranks
-from cls.Links import Links
-from cls.EnginePdfs import PdfEngine, PdfRanks
+from cls.EngineSearchDictionary import Engine, SearchDictionary
+from cls.Sites import Sites
+from cls.EnginePdfs import PdfEngine, PdfDictionary
 from cls.LanguageProcessor import LanguageProcessor
 from cls.Suggestions import Suggestions
 from cls.Trends import Trends
 
-from cls.Formater import Formater
+from cls.Formatter import Formatter
 
 
 # Engine Ranks
@@ -20,28 +20,27 @@ len(engine_instance.results)
 engine_instance.results
 
 # Create an instance of Rank and automatically pass the serp_dicts
-rank_instance = Ranks(engine_instance)
-rank_instance.ranks
+search_dictionary_instance = SearchDictionary(engine_instance)
+search_dictionary_instance.dictionary
     # Format ranks
-ranks = Formater(rank_instance)
-ranks_reponse_w_none = ranks.format(keep_none_values=True)
-ranks_reponse_wo_none = ranks.format(keep_none_values=False)
+s_dict = Formatter(search_dictionary_instance.dictionary)
+s_dict_wo_nones = s_dict.format(keep_none_values=False)
+### ^ route response
 
-links_instance = Links(rank_instance)
-links_instance.schemas
-links_instance.texts
-    # Formated Links
-links = Formater(links_instance)
-links_reponse_w_none = links.format(keep_none_values=True)
-links_reponse_wo_none = links.format(keep_none_values=False)
+sites_instance = Sites(search_dictionary_instance)
+sites_instance.links
+sites_instance.titles
+sites_instance.dictionary_schemas
+sites_schema_dict_formatted = Formatter(sites_instance.dictionary_schemas)
+sites_schema_dict_formatted_wo_nones = sites_schema_dict_formatted.format(keep_none_values=False)
+### ^ route response
 
+sites_instance.dictionary_texts
 
 # LanguageProcess
 # items
-LanguageProcessor(ranks)
-# attributes
-# confidence score
-
+lp = LanguageProcessor(sites_instance) #TODO: figure out how to store input keyword and pass to extract_item_types()
+lp.items
 
 # Suggests
 # terms
@@ -54,5 +53,7 @@ LanguageProcessor(ranks)
 # PDF Ranks
 pdf_instance = PdfEngine("milwaukee m18 fuel")
 
-pdf_rank_instance = PdfRanks(pdf_instance)
-pdf_rank_instance.ranks
+pdf_search_dictionary_instance = PdfDictionary(pdf_instance)
+pdf_dict = pdf_search_dictionary_instance.dictionary
+links = Formater(pdf_dict)
+pdf_dict_w_none = pdf_dict.format(keep_none_values=True)

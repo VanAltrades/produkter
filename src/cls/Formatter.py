@@ -1,9 +1,9 @@
-class Formater:
+class Formatter:
     
     def __init__(self, dictionary):
         
         self.dictionary = dictionary
-        self.response = None
+        self.dictionary_formatted = None
 
     
     def format(self, keep_none_values=True):
@@ -24,6 +24,6 @@ class Formater:
         else:
             print("keep_none_values must be True of False")
             flat_dict = None
-        self.response = flat_dict
+        self.dictionary_formatted = flat_dict
         return flat_dict
 
