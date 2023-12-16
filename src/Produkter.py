@@ -7,7 +7,7 @@ from cls.Trends import Trends
 
 from cls.Formatter import Formatter
 
-
+keyword = "milwaukee m18 fuel"
 # Engine Ranks
 engine_instance = Engine("milwaukee m18 fuel")
 engine_instance = Engine("AMD Ryzen 9 5900X")
@@ -39,13 +39,13 @@ sites_instance.dictionary_texts
 
 # LanguageProcess
 # items
-lp = LanguageProcessor(sites_instance) #TODO: figure out how to store input keyword and pass to extract_item_types()
+lp = LanguageProcessor(sites_instance, keyword)
 lp.items
 
 # Suggests
-# terms
-# questions
-
+suga = Suggestions(lp)
+suga.questions
+suga.suggested_queries
 
 # Trends
 

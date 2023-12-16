@@ -9,8 +9,9 @@ from collections import Counter
 
 class LanguageProcessor:
     
-    def __init__(self, sites_instance):
-        
+    def __init__(self, sites_instance, keyword):
+        self.keyword = keyword
+
         self.nlp = spacy.load("en_core_web_sm")
         self.titles = sites_instance.titles
         self.texts = list(sites_instance.dictionary_texts.values())
@@ -24,7 +25,7 @@ class LanguageProcessor:
         return re.sub(r'[^a-zA-Z0-9\s]', '', text)
     
 
-    def calculate_confidence_score(self, text_corpus, keyword_phrase):
+    def calculate_confidence_score(self, text_corpus):
         # Process the text corpus with spaCy
         doc = self.nlp(text_corpus)
 
@@ -32,7 +33,7 @@ class LanguageProcessor:
         word_counts = Counter([token.text.lower() for token in doc if token.is_alpha])
 
         # Tokenize the keyword phrase
-        tokens = self.nlp(keyword_phrase.lower())
+        tokens = self.nlp(self.keyword.lower())
         
         # Calculate the frequency of the keyword phrase
         phrase_frequency = sum(word_counts[token.text] for token in tokens if token.text in word_counts)
@@ -46,8 +47,11 @@ class LanguageProcessor:
         return confidence_score
     
 
-    def extract_item_types(self, keyword):
+    def extract_item_types(self):
         item_types = []
+
+        # Add self.keyword to the item_types list
+        item_types.append(self.keyword)
 
         for title in self.titles:
             doc = self.nlp(title)
@@ -61,7 +65,7 @@ class LanguageProcessor:
                 cleaned_chunk = self.remove_special_characters(noun_chunks[0])
                 
                 # apply confidence score based on keyword to return only >=.25 CIs title items
-                confidence_score = self.calculate_confidence_score(cleaned_chunk,keyword)
+                confidence_score = self.calculate_confidence_score(cleaned_chunk, self.keyword)
                 if confidence_score >= 0.25:
                     item_types.append(cleaned_chunk)
             else:
