@@ -44,10 +44,13 @@ lp.items
 
 # Suggests
 suga = Suggestions(lp)
-suga.questions
+suga.question_queries
+suga.comparison_queries
 suga.suggested_queries
+### ^ route response
 
 # Trends
+trends_instance = Trends(lp, keyword=keyword)
 
 
 # PDF Ranks
@@ -55,5 +58,5 @@ pdf_instance = PdfEngine("milwaukee m18 fuel")
 
 pdf_search_dictionary_instance = PdfDictionary(pdf_instance)
 pdf_dict = pdf_search_dictionary_instance.dictionary
-links = Formater(pdf_dict)
+links = Formatter(pdf_dict)
 pdf_dict_w_none = pdf_dict.format(keep_none_values=True)
