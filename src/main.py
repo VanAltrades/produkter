@@ -50,8 +50,10 @@ suga.suggested_queries
 ### ^ route response
 
 # Trends
-trends_instance = Trends(lp, keyword=keyword)
-
+trends_instance = Trends(keyword=keyword)
+trends_instance.keyword_related_dictionary
+trends_instance.keyword_rising_dictionary
+trends_instance.interest_dictionary
 
 # PDF Ranks
 pdf_instance = PdfEngine("milwaukee m18 fuel")

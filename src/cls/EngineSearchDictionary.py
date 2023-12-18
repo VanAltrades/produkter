@@ -7,7 +7,7 @@ from pandas import json_normalize
 
 class Engine:
     
-    def __init__(self, query, sa_credentials_path="dukt_sa.json", cx_path="cs_key.json", **enginekwargs):
+    def __init__(self, query, sa_credentials_path, cx_path, **enginekwargs):
         
         self.credentials = self.load_credentials(sa_credentials_path)
         self.service = build("customsearch", "v1", credentials=self.credentials)

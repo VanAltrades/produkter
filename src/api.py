@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from cls.EngineRanks import Engine, Ranks
+from cls.EngineSearchDictionary import Engine, SearchDictionary
 
 app = Flask(__name__)
 
@@ -11,7 +11,7 @@ def ranks():
         return jsonify({'error': 'Product parameter is missing'}), 400
 
     engine_instance = Engine(product)
-    rank_instance = Ranks(engine_instance)
+    rank_instance = SearchDictionary(engine_instance)
     return rank_instance.ranks
 
 if __name__ == '__main__':

@@ -36,7 +36,7 @@ class Trends:
 
         # 3. 
         self.payload_interest = self.build_interest_payload()
-        self.weekly = self.get_interest_trends()
+        self.interest_dictionary = self.get_interest_trends()
         # self.rising = self.get_rising_keywords()
 
 
