@@ -5,6 +5,7 @@ from google.oauth2 import service_account
 import pandas as pd
 from pandas import json_normalize
 
+
 class Engine:
     
     def __init__(self, query, sa_credentials_path, cx_path, **enginekwargs):

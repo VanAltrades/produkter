@@ -1,3 +1,4 @@
+import json
 from cls.EngineSearchDictionary import Engine, SearchDictionary
 from cls.Sites import Sites
 from cls.EnginePdfs import PdfEngine, PdfDictionary
@@ -7,9 +8,15 @@ from cls.Trends import Trends
 
 from cls.Formatter import Formatter
 
-keyword = "milwaukee m18 fuel"
+def response_to_json(response):
+    json_object = json.dumps(response, indent=2)
+    return json_object
+
+
+# keyword = "milwaukee m18 fuel"
+keyword = "anker A3025"
 # Engine Ranks
-engine_instance = Engine("milwaukee m18 fuel")
+engine_instance = Engine(keyword,sa_credentials_path="dukt_sa.json", cx_path="cs_key.json")
 engine_instance = Engine("AMD Ryzen 9 5900X")
 engine_instance = Engine("Huy Fong HFSR3G")
 engine_instance = Engine("Portal PAT-2416096054")

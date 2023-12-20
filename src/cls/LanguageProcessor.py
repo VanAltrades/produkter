@@ -65,7 +65,7 @@ class LanguageProcessor:
                 cleaned_chunk = self.remove_special_characters(noun_chunks[0])
                 
                 # apply confidence score based on keyword to return only >=.25 CIs title items
-                confidence_score = self.calculate_confidence_score(cleaned_chunk, self.keyword)
+                confidence_score = self.calculate_confidence_score(cleaned_chunk)
                 if confidence_score >= 0.25:
                     item_types.append(cleaned_chunk)
             else:
