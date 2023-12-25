@@ -14,30 +14,12 @@ class Trends:
                                  requests_args={'verify':False})
 
         self.keyword = keyword
-        self.keyword_dictionary = self.build_keyword_payload_dictionary()
-        self.keyword_related_dictionary = self.get_keyword_related_keywords()
-        self.keyword_rising_dictionary = self.get_keyword_rising_keywords()
+        # self.keyword_dictionary = self.build_keyword_payload_dictionary()
+        # self.keyword_related_dictionary = self.get_keyword_related_keywords()
+        # self.keyword_rising_dictionary = self.get_keyword_rising_keywords()
 
-        #1. get related keywords to the engine's `keyword`
-        # self.related = self.get_keyword_related_keywords()      
-        
-        # 2. instantiate top 2 other keywords if they exists  
-
-        # self.keyword_related_list = None
-        # if not isinstance(self.keyword_related_list, list):
-        #     raise TypeError("The 'keyword_related_list' from `get_related_keywords` must be a list.")
-
-
-        # # TODO: may delete since prioritizing trends' related keywords instead of nlp items
-        # self.keyword_items_list_ = [item for item in language_processor_instance.items if isinstance(item, str) and len(item) < 100]
-        # if not isinstance(self.keyword_list, list):
-        #     raise TypeError("The 'keyword_list' must be a list.")
-
-
-        # 3. 
-        self.payload_interest = self.build_interest_payload()
-        self.interest_dictionary = self.get_interest_trends()
-        # self.rising = self.get_rising_keywords()
+        # self.payload_interest = self.build_interest_payload()
+        # self.interest_dictionary = self.get_interest_trends()
 
 
     def build_keyword_payload_dictionary(self):
@@ -100,7 +82,8 @@ class Trends:
 
 
     def get_interest_trends(self):
-        df = self.payload_interest.drop(
-            self.payload_interest[self.payload_interest['isPartial'] == True].index)
+        payload_interest = self.build_interest_payload()
+        df = payload_interest.drop(
+            payload_interest[payload_interest['isPartial'] == True].index)
         # df = df[self.keyword]
         return df.to_json(orient='index', date_format='iso')

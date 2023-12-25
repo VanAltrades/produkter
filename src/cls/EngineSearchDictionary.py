@@ -8,15 +8,20 @@ from pandas import json_normalize
 
 class Engine:
     
-    def __init__(self, query, sa_credentials_path, cx_path, **enginekwargs):
+    def __init__(self, q, sa_credentials_path, cx_path, **enginekwargs):
         
         self.credentials = self.load_credentials(sa_credentials_path)
         self.service = build("customsearch", "v1", credentials=self.credentials)
         self.cx = self.load_cx(cx_path)
-        self.keyword = query
+        self.q = q
 
         self.engine = None
-        self.results = self.search(query, **enginekwargs)
+        self.results = self.search(q, **enginekwargs)
+
+
+    def to_dict(self):
+        return {'q':self.q, 'results': self.results}
+
 
     @staticmethod
     def load_credentials(sa_credentials_path):
@@ -52,12 +57,8 @@ class Engine:
         print(json.dumps(js, indent=2))
 
 
-    #  ____ ____ ____ 
-    # ||c |||s |||e ||
-    # ||__|||__|||__||
-    # |/__\|/__\|/__\|
-    def search(self, query, **enginekwargs):        
-        d = self.service.cse().list(q=query, cx=self.cx, **enginekwargs).execute()
+    def search(self, q, **enginekwargs):        
+        d = self.service.cse().list(q=q, cx=self.cx, **enginekwargs).execute()
         self.engine = d
         try:
             results = d.get('items')
@@ -71,14 +72,19 @@ class Engine:
 
 class SearchDictionary:
     def __init__(self, engine_instance):
-        # Assuming engine_instance is an instance of the Engine class
-        self.results = engine_instance.results
-        self.dictionary = self.get_dictionary_dict()
-        # You can now use self.results in the Rank class or perform additional operations.
+        if engine_instance is not None:
+            # Assuming engine_instance is an instance of the Engine class
+            self.results = engine_instance.results
+            self.dictionary = self.get_dictionary_dict()
+            # You can now use self.results in the Rank class or perform additional operations.
+        else:
+            raise("Error no engine_instance")
 
-    #  +-+-+-+-+
-    #  |s|e|r|p|
-    #  +-+-+-+-+
+
+    def to_dict(self):
+        return {'dictionary': self.dictionary}
+
+
     @staticmethod
     def safe_get(dictionary, *keys, default=None):
         for key in keys:

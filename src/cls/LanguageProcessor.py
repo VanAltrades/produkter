@@ -74,22 +74,33 @@ class LanguageProcessor:
         return item_types
     
 
-    def extract_attributes(self):
-        all_attributes = {}
+    # def extract_attributes(self):
+    #     all_attributes = {}
 
-        for corpus in self.texts:
-             if corpus is not None:
-                corpus_load = self.nlp(corpus)
-                attributes = {ent.label_: ent.text for ent in corpus_load.ents}
+    #     for corpus in self.texts:
+    #          if corpus is not None:
+    #             corpus_load = self.nlp(corpus)
+    #             attributes = {ent.label_: ent.text for ent in corpus_load.ents}
                 
-                for label, text in attributes.items():
-                    if label not in all_attributes:
-                        all_attributes[label] = set()  # Using a set to store distinct values for each label
-                    all_attributes[label].add(text)
+    #             for label, text in attributes.items():
+    #                 if label not in all_attributes:
+    #                     all_attributes[label] = set()  # Using a set to store distinct values for each label
+    #                 all_attributes[label].add(text)
 
-        distinct_attributes = {label: list(values) for label, values in all_attributes.items()}
-        return distinct_attributes
+    #     distinct_attributes = {label: list(values) for label, values in all_attributes.items()}
+    #     return distinct_attributes
 
+    def extract_attributes(self, text):
+        doc = self.nlp(text)
+
+        attributes = {}
+
+        for token in doc:
+            if token.dep_ == "amod" and token.head.pos_ == "NOUN":
+                # assuming adjectives modify nouns (color: green)
+                attributes[token.head.text.lower()] = token.text.lower()
+        return attributes
+    
     # extract_attributes(corpus = "The product has a red color, large size, and costs $20.")
 
 

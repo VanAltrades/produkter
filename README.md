@@ -8,6 +8,10 @@
 
 `https://console.cloud.google.com/apis/library/customsearch.googleapis.com`
 
+**Google Search Spam Policies**
+
+`https://developers.google.com/search/docs/essentials/spam-policies`
+
 ## TODO: new data structure
 
 ```
