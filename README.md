@@ -12,6 +12,8 @@
 
 `https://developers.google.com/search/docs/essentials/spam-policies`
 
+allintext: {brand} {mpn}
+
 ## TODO: new data structure
 
 ```

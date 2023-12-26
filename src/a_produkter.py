@@ -111,6 +111,7 @@ def get_search_results():
     # session['search_instance'] = json.dumps(search_instance, default=serialize_class)
     session['q'] = q
     session['search_dictionary'] = search_instance.dictionary
+    session['links'] = search_instance.links
 
     return s_dict_wo_nones
 

@@ -18,10 +18,13 @@ class Engine:
         self.engine = None
         self.results = self.search(q, **enginekwargs)
 
-
-    def to_dict(self):
-        return {'q':self.q, 'results': self.results}
-
+    
+    def __json__(self):
+        return {
+            'q': self.q,
+            'results': self.results,
+        }
+    
 
     @staticmethod
     def load_credentials(sa_credentials_path):
@@ -76,14 +79,19 @@ class SearchDictionary:
             # Assuming engine_instance is an instance of the Engine class
             self.results = engine_instance.results
             self.dictionary = self.get_dictionary_dict()
-            # You can now use self.results in the Rank class or perform additional operations.
+            self.links = [item['link'] if 'link' in item else None for item in self.dictionary.values()]
+            self.titles = [item['title'] if 'title' in item else None for item in self.dictionary.values()]
         else:
             raise("Error no engine_instance")
 
 
-    def to_dict(self):
-        return {'dictionary': self.dictionary}
-
+    def __json__(self):
+        return {
+            'dictionary': self.dictionary,
+            'links': self.links,
+            'titles': self.titles
+        }
+    
 
     @staticmethod
     def safe_get(dictionary, *keys, default=None):

@@ -21,28 +21,44 @@ class Trends:
         # self.payload_interest = self.build_interest_payload()
         # self.interest_dictionary = self.get_interest_trends()
 
+    
+    def __json__(self):
+        return {
+            'keyword': self.keyword,
+            'pytrends_params': {
+                'hl': self.pytrends.hl,
+                'tz': self.pytrends.tz,
+                'timeout': self.pytrends.timeout,
+                'retries': self.pytrends.retries,
+                'backoff_factor': self.pytrends.backoff_factor,
+                'requests_args': {'verify': self.pytrends.requests_args.get('verify', True)}
+            }
+        }
+
 
     def build_keyword_payload_dictionary(self):
         try:
             self.pytrends.build_payload([self.keyword], cat=0, timeframe='today 5-y', geo='US')
             payload = self.pytrends.related_queries()
-            keyword_dictionary = payload.get(self.keyword)
-            return keyword_dictionary
+            self.keyword_dictionary = payload.get(self.keyword)
+            return self.keyword_dictionary
         except Exception as e:
             print(e)
             return None
         
 
-    def get_keyword_related_keywords(self):
+    def get_keyword_related_keywords(self, keyword_dictionary):
         top_related_dict = {}
-        top_related = self.keyword_dictionary['top']  # DataFrame of top related queries
+        keyword_dictionary = self.build_keyword_payload_dictionary()
+        top_related = keyword_dictionary['top']  # DataFrame of top related queries
         top_related_dict[self.keyword] = top_related.to_dict(orient='records')
         return top_related_dict
 
 
     def get_keyword_rising_keywords(self):
         top_rising_dict = {}
-        top_rising = self.keyword_dictionary['rising']  # DataFrame of top related queries
+        keyword_dictionary = self.build_keyword_payload_dictionary()
+        top_rising = keyword_dictionary['rising']  # DataFrame of top related queries
         top_rising_dict[self.keyword] = top_rising.to_dict(orient='records')
         return top_rising_dict
 
@@ -53,23 +69,6 @@ class Trends:
             return self.pytrends.related_queries()
         except:
             return None
-        
-    
-    # def get_related_keywords_related_keywords(self):
-    #     top_related_dict = {}
-
-    #     # case when using Engine's keyword because no related keywords yet
-    #     if self.keyword_related_list[:3] is None: 
-    #         # for keyword in self.keyword_list:
-    #         top_related = self.payload_related.get(self.keyword)['top']  # DataFrame of top related queries
-    #         top_related_dict[self.keyword] = top_related.to_dict(orient='records')
-    #         return top_related_dict
-    #     # case when related keywords already collected so loop through top ones
-    #     else:
-    #         for keyword in self.keyword_related_list:
-    #             top_related = self.payload_related.get(keyword)['top']  # DataFrame of top related queries
-    #             top_related_dict[keyword] = top_related.to_dict(orient='records')
-    #             return top_related_dict
     
 
     def build_interest_payload(self):

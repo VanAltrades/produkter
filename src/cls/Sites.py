@@ -7,13 +7,29 @@ import json
 class Sites:
     def __init__(self, search_dictionary_instance):
         # Assuming search_dictionary_instance is an instance of the rank class
-        self.links = [item['link'] if 'link' in item else None for item in search_dictionary_instance.dictionary.values()]
-        self.titles = [item['title'] if 'title' in item else None for item in search_dictionary_instance.dictionary.values()]
+        # self.links = [item['link'] if 'link' in item else None for item in search_dictionary_instance.dictionary.values()]
+        # self.titles = [item['title'] if 'title' in item else None for item in search_dictionary_instance.dictionary.values()]
+        try:
+            self.links = search_dictionary_instance.links
+        except: # from __json__()
+            self.links = search_dictionary_instance['links']
+        try:
+            self.titles = search_dictionary_instance.titles
+        except: # from __json__()
+            self.titles = search_dictionary_instance['titles']
 
         self.ua = UserAgent()
         
         self.dictionary_schemas = self.get_schema_dict()
         self.dictionary_texts = self.get_text_dict()
+
+
+    def __json__(self):
+        return {
+            'dictionary_schemas': self.dictionary_schemas,
+            'dictionary_texts': self.dictionary_texts
+        }
+    
 
     def get_url_soup(self, url):
         headers = {'User-Agent': self.ua.random}
