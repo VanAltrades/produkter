@@ -1,12 +1,13 @@
 import json
-from cls.EngineSearchDictionary import Engine, SearchDictionary
-from cls.Sites import Sites
-from cls.EnginePdfs import PdfEngine, PdfDictionary
-from cls.LanguageProcessor import LanguageProcessor
-from cls.Suggestions import Suggestions
-from cls.Trends import Trends
+from classes.EngineSearchDictionary import Engine, SearchDictionary
+from classes.Sites import Sites
+from classes.EnginePdfs import PdfEngine, PdfDictionary
+from classes.LanguageProcessor import LanguageProcessor
+from classes.Suggestions import Suggestions
+from classes.Trends import Trends
 
-from cls.Formatter import Formatter
+from utils.formatting import format_search_dictionary
+from flask import jsonify
 
 def response_to_json(response):
     json_object = json.dumps(response, indent=2)
@@ -30,10 +31,12 @@ engine_instance.results
 search_dictionary_instance = SearchDictionary(engine_instance)
 search_dictionary_instance.dictionary
     # Format ranks
-s_dict = Formatter(search_dictionary_instance.dictionary)
+r = jsonify({f"{engine_instance.q}":search_dictionary_instance.dictionary}) 
+
+s_dict_wo_nones = format_search_dictionary(search_dictionary_instance.dictionary, keep_none_values=False)
 # s_dict_wo_nones = s_dict.format(keep_none_values=False)
-s_dict_w_nones = s_dict.format(keep_none_values=True)
-search_result = response_to_json(s_dict_w_nones)
+# s_dict_w_nones = s_dict.format(keep_none_values=True)
+search_result = response_to_json(s_dict_wo_nones)
 ### ^ route response
 
 sites_instance = Sites(search_dictionary_instance)

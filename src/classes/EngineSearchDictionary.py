@@ -1,20 +1,19 @@
 # cse (ascii - small keyboard)
 import json
 from googleapiclient.discovery import build
-from google.oauth2 import service_account
-import pandas as pd
-from pandas import json_normalize
+# from google.oauth2 import service_account
+
+from config.config import CS_KEY, SA_CREDENTIALS
 
 
 class Engine:
     
-    def __init__(self, q, sa_credentials_path, cx_path, **enginekwargs):
-        
-        self.credentials = self.load_credentials(sa_credentials_path)
+    def __init__(self, q, **enginekwargs):
+        self.cx = CS_KEY
+        self.credentials = SA_CREDENTIALS
         self.service = build("customsearch", "v1", credentials=self.credentials)
-        self.cx = self.load_cx(cx_path)
+        
         self.q = q
-
         self.engine = None
         self.results = self.search(q, **enginekwargs)
 
@@ -24,22 +23,6 @@ class Engine:
             'q': self.q,
             'results': self.results,
         }
-    
-
-    @staticmethod
-    def load_credentials(sa_credentials_path):
-        # if os.path.exists(sa_credentials_path):
-        return service_account.Credentials.from_service_account_file(
-            sa_credentials_path, 
-            scopes=["https://www.googleapis.com/auth/cse"]
-        )
-    
-
-    @staticmethod
-    def load_cx(cx_path):
-        with open(cx_path, 'r') as file:
-            data = json.load(file)
-        return data["key"]
     
 
     @staticmethod

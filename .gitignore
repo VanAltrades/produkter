@@ -1,6 +1,5 @@
 /venv
 dukt_sa.json
 cs_key.json
-gcp_service_account.json
-news_api_key.json
+app_secrets.py
 __pycache__/

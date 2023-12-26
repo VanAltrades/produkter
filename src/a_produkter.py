@@ -2,13 +2,13 @@ from flask import Flask, request, Blueprint, g, session
 import json
 import os
 import base64
-from cls.EngineSearchDictionary import Engine, SearchDictionary
-from cls.Sites import Sites
+from classes.EngineSearchDictionary import Engine, SearchDictionary
+from classes.Sites import Sites
 # from cls.EnginePdfs import PdfEngine, PdfDictionary
 # from cls.LanguageProcessor import LanguageProcessor
 # from cls.Suggestions import Suggestions
-from cls.Trends import Trends
-from cls.Formatter import Formatter
+from classes.Trends import Trends
+from produkter.src.classes.utils import Formatter
 
 
 def response_to_json(response):

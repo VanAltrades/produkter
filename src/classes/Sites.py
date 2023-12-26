@@ -1,5 +1,6 @@
 # url (ascii - digital)
 import requests
+import re
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 import json
@@ -26,8 +27,8 @@ class Sites:
 
     def __json__(self):
         return {
-            'dictionary_schemas': self.dictionary_schemas,
-            'dictionary_texts': self.dictionary_texts
+            'schemas': self.dictionary_schemas,
+            'texts': self.dictionary_texts
         }
     
 
@@ -60,9 +61,11 @@ class Sites:
 
     def get_schema(self, soup):
         if soup is not None:
-            soup_script = soup.find("script", {"type":"application/ld+json"})
+            soup_script = soup.find("script", {"type":"application/ld+json"})            
             if soup_script is not None:
-                schema = json.loads("".join(soup_script.contents))
+                json_data = "".join(soup_script.contents)
+                cleaned_json_data = re.sub(r'[^\x20-\x7E]', '', json_data)
+                schema = json.loads(cleaned_json_data)
                 return schema
             else:
                 return None
