@@ -2,7 +2,7 @@
 FROM python:3.8-slim
 
 # Set the working directory in the container
-WORKDIR /produkter
+WORKDIR /produkter/src
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -16,8 +16,8 @@ RUN pip install -U spacy
 # Download spaCy English model
 RUN python -m spacy download en_core_web_sm
 
-# Copy the current directory contents into the container at /produkter
-COPY . /produkter
+# Copy the current directory contents into the container at /produkter/src
+COPY . /produkter/src
 
 # Install your Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
@@ -29,4 +29,4 @@ EXPOSE 80
 ENV NAME World
 
 # Run app.py when the container launches
-CMD ["python", "./src/api.py"]
+CMD ["python", "./src/app.py"]
