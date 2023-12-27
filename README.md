@@ -1,78 +1,93 @@
-# PRODUKTOR
+# PRODUKTER
+
+## Prioritized Improvement List
+
+#### 1. Change routes to maintain set_produkt/q/... structure:
+
+```
+@api_v1_bp.route('/set_produkt/<q>', endpoint='set_endpoint')
+
+@api_v1_bp.route('/set_produkt/<q>/search', methods=['GET'], endpoint='search_endpoint') 
+
+...
+```
+
+* Make sure this works for all sub routes and allows for a reset when new q is added.
+
+#### 2. Add in template routes to visualize responses in demos:
+
+```
+from flask import Flask, render_template, jsonify
+
+app = Flask(__name__, template_folder='src/templates')
+
+@app.route('/search')
+def search():
+    # Replace this with your actual API logic
+    json_response = {"key": "value", "another_key": "another_value"}
+    return jsonify(json_response)
+
+@app.route('/search_results')
+def search_results():
+    # Get the JSON response from the API endpoint
+    json_response = search().get_json()
+
+    # Render the search_results.html template with the JSON response
+    return render_template('search_results.html', json_response=json_response)
+
+if __name__ == '__main__':
+    app.run(debug=True)
+```
+
+#### 3. Explore ?q options instead of session route
+
+In the future I will want to cache results and this session route will lose it's importance. The responses are already larger than the cookies cache so each result is processing an api even if it was already run.
+
+#### 4. Implement redis caching
+
+* [Implementation](https://levelup.gitconnected.com/implement-api-caching-with-redis-flask-and-docker-step-by-step-9139636cef24)
+
+* [Deployment](https://cloud.google.com/memorystore/docs/redis/connect-redis-instance-cloud-run#python)
+
+This step will require a redis instance and should allow for running, *for example:* i_sites, i_suggestions, i_trends once and then calling back the instance for each subroute. Each cached instance json should have a unique `q` identifier as a key [ex](https://www.youtube.com/watch?v=_8lJ5lp8P0U). This should work until a new `q` is requested. 
+
+#### 5. Containerize the Application
+
+Before attempting to deploy the app to Cloud Run, I will have to containerize the app using docker.
+
+* Dockerfile review and update
+
+* .env file review and update 
+
+* config.app_secrets.py to os environment variables via .env file
+
+* config.config BaseConfig class inclusion in app.py
 
 ## SearchEngine
 
-**Authenticate Google's Custom Search API:**
 
-`https://programmablesearchengine.google.com/controlpanel/all`
+**Authenticate Google's Custom Search API links**
 
-`https://console.cloud.google.com/apis/library/customsearch.googleapis.com`
+[Programable Search Engine Setup](https://programmablesearchengine.google.com/controlpanel/all)
+
+[Custom Search Engine API](https://console.cloud.google.com/apis/library/customsearch.googleapis.com)
+
 
 **Google Search Spam Policies**
 
-`https://developers.google.com/search/docs/essentials/spam-policies`
+[Google's Spam Policies](https://developers.google.com/search/docs/essentials/spam-policies)
 
-allintext: {brand} {mpn}
-
-## TODO: new data structure
-
-```
-class CustomSearchAPI:
-    def search(self, keyword):
-        # Implementation of custom search API communication
-        return product_info_json
-
-class WebScraping:
-    def scrape_websites(self, links):
-        # Implementation of web scraping to extract additional product information
-        return extended_product_info_json
-
-class PDFProcessing:
-    def process_pdfs(self, pdf_links, file_type_filter):
-        # Implementation of PDF processing to extract information
-        return pdf_product_info_json
-
-class NLPProcessing:
-    def apply_nlp(self, product_info):
-        # Implementation of NLP to enhance product information
-        return nlp_enhanced_product_info
-
-class VertexAIIntegration:
-    def apply_vertex_ai(self, product_info):
-        # Implementation of Vertex AI integration
-        return ai_enhanced_product_info
-
-class DataStructure:
-    def __init__(self):
-        self.product_info = {}
-
-class ProductInformationAPI:
-    def __init__(self):
-        self.custom_search_api = CustomSearchAPI()
-        self.web_scraping = WebScraping()
-        self.pdf_processing = PDFProcessing()
-        self.nlp_processing = NLPProcessing()
-        self.vertex_ai_integration = VertexAIIntegration()
-        self.data_structure = DataStructure()
-
-    def process_product_information(self, keyword):
-        self.data_structure.product_info = self.custom_search_api.search(keyword)
-        website_info = self.web_scraping.scrape_websites(self.data_structure.product_info['links'])
-        pdf_info = self.pdf_processing.process_pdfs(self.data_structure.product_info['pdf_links'], 'type_filter')
-        self.data_structure.product_info.update(website_info)
-        self.data_structure.product_info.update(pdf_info)
-        self.data_structure.product_info = self.nlp_processing.apply_nlp(self.data_structure.product_info)
-        self.data_structure.product_info = self.vertex_ai_integration.apply_vertex_ai(self.data_structure.product_info)
-
-    def get_product_information(self):
-        return self.data_structure.product_info
-```
 
 **Base URL:**
 
-`https://www.googleapis.com/customsearch/v1`
+`base_url = https://www.googleapis.com/customsearch/v1`
 
-**Parameters:**
+`q_confidence_modifier = f"allintext: {brand} {mpn}"`
+
+<details>
+<summary>
+Parameters:
+</summary>
 
 * q={searchTerms}: The main search query. It represents the terms that you want to search for.
 
@@ -137,3 +152,6 @@ class ProductInformationAPI:
 * alt=json: Specifies the response format as JSON.
 
 * These parameters provide a way to customize and refine your search to get more relevant results based on your specific requirements.
+</details>
+
+
