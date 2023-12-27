@@ -2,7 +2,7 @@
 
 ## Prioritized Improvement List
 
-#### 1. Change routes to maintain set_produkt/q/... structure:
+~~#### 1. Change routes to maintain set_produkt/q/... structure:~~ not possible, using ?q=
 
 ```
 @api_v1_bp.route('/set_produkt/<q>', endpoint='set_endpoint')
@@ -39,9 +39,15 @@ if __name__ == '__main__':
     app.run(debug=True)
 ```
 
-#### 3. Explore ?q options instead of session route
+~~#### 3. Explore ?q options instead of session route~~
 
 In the future I will want to cache results and this session route will lose it's importance. The responses are already larger than the cookies cache so each result is processing an api even if it was already run.
+
+#### 3.1. Remove q from Class keys and instead use jsonify from app.pt
+
+`jsonify({f"{session['q']}": results})`
+
+and remove `q` from classes so the Classes return only the results, not the keyword.
 
 #### 4. Implement redis caching
 

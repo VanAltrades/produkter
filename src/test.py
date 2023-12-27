@@ -1,3 +1,4 @@
+# move to /src directory to run
 import json
 from classes.EngineSearchDictionary import Engine, SearchDictionary
 from classes.Sites import Sites
@@ -17,7 +18,7 @@ def response_to_json(response):
 keyword = "milwaukee m18 fuel"
 # keyword = "anker A3025"
 # Engine Ranks
-engine_instance = Engine(keyword,sa_credentials_path="dukt_sa.json", cx_path="cs_key.json")
+engine_instance = Engine(keyword)
 engine_instance = Engine("AMD Ryzen 9 5900X")
 engine_instance = Engine("Huy Fong HFSR3G")
 engine_instance = Engine("Portal PAT-2416096054")
@@ -67,13 +68,21 @@ suggestion_result = response_to_json(suga.suggested_queries)
 ### ^ route response
 
 # Trends
-trends_instance = Trends(keyword=keyword)
+trends_instance = Trends(keyword="langer gaming mouse")
+trends_instance.keyword_dictionary
+
+
 trends_instance.keyword_related_dictionary
-related_result = response_to_json(trends_instance.keyword_related_dictionary)
 trends_instance.keyword_rising_dictionary
-rising_result = response_to_json(trends_instance.keyword_rising_dictionary)
+
+trends_instance.payload_interest
 trends_instance.interest_dictionary
-interest_result = response_to_json(trends_instance.interest_dictionary)
+# related_result = response_to_json(trends_instance.keyword_related_dictionary)
+# trends_instance.keyword_rising_dictionary
+# rising_result = response_to_json(trends_instance.keyword_rising_dictionary)
+# trends_instance.interest_dictionary
+# interest_result = response_to_json(trends_instance.interest_dictionary)
+
 # PDF Ranks
 pdf_instance = PdfEngine("milwaukee m18 fuel")
 

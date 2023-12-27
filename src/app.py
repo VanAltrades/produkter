@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, jsonify, session
+from flask import Flask, Blueprint, request, jsonify, session, render_template
 import json
 import os
 import base64
@@ -17,7 +17,7 @@ def response_to_json(response):
     json_object = json.dumps(response, indent=2)
     return json_object
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='templates')
 
 # Set a secret key for the session
 app.secret_key = base64.b64encode(os.urandom(24)).decode('utf-8')
@@ -32,8 +32,11 @@ current_script_directory = os.path.dirname(os.path.abspath(__file__))
 os.chdir(current_script_directory)
 
 
-@api_v1_bp.route('/set_produkt/<q>', endpoint='set_endpoint')
-def set_produkt(q):
+@api_v1_bp.route('/set_produkt', methods=['GET'], endpoint='set_endpoint')
+def set_produkt():
+    # Get the 'q' parameter from the query string
+    q = request.args.get('q')
+
     i_engine = Engine(q)
     i_search = SearchDictionary(i_engine)
     # i_trends = Trends(q)
@@ -42,6 +45,7 @@ def set_produkt(q):
     session['i_search'] = i_search.__json__()
 
     return f'Data set successfully.<br><br>Produkt: {q}'
+
 
 @api_v1_bp.route('/search', methods=['GET'], endpoint='search_endpoint')
 def get_search_results():
@@ -52,6 +56,15 @@ def get_search_results():
         return jsonify({f"{session['q']}": results})
     else:
         return jsonify({"error": "Produkt not initiated. First run /set_produkt/<product id>."})
+
+
+@api_v1_bp.route('/search_results', methods=['GET'], endpoint='search_results_endpoint')
+def show_search_results():
+    # Get the JSON response from the API endpoint
+    json_response = get_search_results().get_json()
+
+    # Render the search_results.html template with the JSON response
+    return render_template('search_results.html', json_response=json_response)
 
 
 def get_sites_instance():

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center; /* Center the content */
+        }
+        h1, h2, ul {
+            margin-bottom: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+        .image-container {
+            max-width: 1000px;
+            max-height: 1000px;
+            margin: 0 auto; /* Center the image container */
+        }
+        img {
+            max-width: 100%; /* Allow smaller images to retain their dimensions */
+            max-height: 1000px; /* Set the maximum height */
+            width: auto;
+            height: auto;
+        }
+        a {
+            word-break: break-all; /* Handle long URLs */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if session['q'] %}
+            <h1>{{ session['q'] }}</h1>
+
+            {% for key, values in json_response[session['q']].items() %}
+                <h2>{{ key }}</h2>
+                <ul>
+                    {% for value in values %}
+                        {% if "image" in key.lower() %}
+                            <li class="image-container"><img src="{{ value }}" alt="{{ key }}"></li>
+                        {% elif "link" in key.lower() or "site" in key.lower() %}
+                            <li><a href="{{ value }}" target="_blank">{{ value }}</a></li>
+                        {% else %}
+                            <li>{{ value }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endfor %}
+        {% else %}
+            <p>No search results available.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
