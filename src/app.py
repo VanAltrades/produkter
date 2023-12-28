@@ -31,7 +31,11 @@ current_script_directory = os.path.dirname(os.path.abspath(__file__))
 # Change the working directory to the directory of the current script
 os.chdir(current_script_directory)
 
-
+#   ____  _____ _____ 
+#  / ___|| ____|_   _|
+#  \___ \|  _|   | |  
+#   ___) | |___  | |  
+#  |____/|_____| |_|  
 @api_v1_bp.route('/set_produkt', methods=['GET'], endpoint='set_endpoint')
 def set_produkt():
     # Get the 'q' parameter from the query string
@@ -46,7 +50,11 @@ def set_produkt():
 
     return f'Data set successfully.<br><br>Produkt: {q}'
 
-
+#   ____  _____    _    ____   ____ _   _ 
+#  / ___|| ____|  / \  |  _ \ / ___| | | |
+#  \___ \|  _|   / _ \ | |_) | |   | |_| |
+#   ___) | |___ / ___ \|  _ <| |___|  _  |
+#  |____/|_____/_/   \_\_| \_\\____|_| |_|
 @api_v1_bp.route('/search', methods=['GET'], endpoint='search_endpoint')
 def get_search_results():
     i_search = session['i_search']
@@ -66,7 +74,11 @@ def show_search_results():
     # Render the search_results.html template with the JSON response
     return render_template('search_results.html', json_response=json_response)
 
-
+#   ____ ___ _____ _____ ____  
+#  / ___|_ _|_   _| ____/ ___| 
+#  \___ \| |  | | |  _| \___ \ 
+#   ___) | |  | | | |___ ___) |
+#  |____/___| |_| |_____|____/ 
 def get_sites_instance():
     '''
     get Sites instance from its existing session __json__() 
@@ -123,6 +135,11 @@ def get_text_results():
         return jsonify({"error":"Invalid response from /texts."}) 
 
 
+#   ____  _   _  ____  ____ _____ ____ _____ ___ ___  _   _ ____  
+#  / ___|| | | |/ ___|/ ___| ____/ ___|_   _|_ _/ _ \| \ | / ___| 
+#  \___ \| | | | |  _| |  _|  _| \___ \ | |  | | | | |  \| \___ \ 
+#   ___) | |_| | |_| | |_| | |___ ___) || |  | | |_| | |\  |___) |
+#  |____/ \___/ \____|\____|_____|____/ |_| |___\___/|_| \_|____/
 def get_suggestions_instance(q):
     '''
     get Suggestions instance from its existing session __json__() 
@@ -204,6 +221,11 @@ def get_suggestions():
         return jsonify({"error": "Invalid response from /suggestions."})
  
 
+#   _____ ____  _____ _   _ ____  ____  
+#  |_   _|  _ \| ____| \ | |  _ \/ ___| 
+#    | | | |_) |  _| |  \| | | | \___ \ 
+#    | | |  _ <| |___| |\  | |_| |___) |
+#    |_| |_| \_\_____|_| \_|____/|____/ 
 @api_v1_bp.route('/interest', methods=['GET'], endpoint='interest_endpoint')
 def get_interest_results():
     q = session.get('q')
@@ -224,6 +246,33 @@ def get_related_results():
     interest_dictionary = i_trends.get_keyword_related_keywords()
     interest_result = response_to_json(interest_dictionary)
     return interest_result
+
+#   ____  _____ ____   ___  _   _ ____   ____ _____ ____  
+#  |  _ \| ____/ ___| / _ \| | | |  _ \ / ___| ____/ ___| 
+#  | |_) |  _| \___ \| | | | | | | |_) | |   |  _| \___ \ 
+#  |  _ <| |___ ___) | |_| | |_| |  _ <| |___| |___ ___) |
+#  |_| \_\_____|____/ \___/ \___/|_| \_\\____|_____|____/ 
+@api_v1_bp.route('/resources', methods=['GET'], endpoint='resources_endpoint')
+def get_resources_results():
+    q = session['q']
+    i_engine_pdf = Engine(q, fileType="pdf")
+    i_search_pdf = SearchDictionary(i_engine_pdf)
+
+
+    if i_search_pdf is not None:
+        results = format_search_dictionary(i_search_pdf.dictionary, keep_none_values=False)
+        results_pdfs = results['link']
+        return jsonify({f"{session['q']}": results_pdfs})
+    else:
+        return jsonify({"error": "Produkt not initiated. First run /set_produkt/<product id>."})
+
+@api_v1_bp.route('/resources_results', methods=['GET'], endpoint='resources_results_endpoint')
+def show_resources_results():
+    # Get the JSON response from the API endpoint
+    json_response = get_resources_results().get_json()
+
+    # Render the search_results.html template with the JSON response
+    return render_template('pdfs_results.html', json_response=json_response)
 
 
 # Register the blueprint with the Flask app
