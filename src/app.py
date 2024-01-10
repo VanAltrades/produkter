@@ -5,7 +5,6 @@ import base64
 
 from classes.EngineSearchDictionary import Engine, SearchDictionary
 from classes.Sites import Sites
-# from cls.EnginePdfs import PdfEngine, PdfDictionary
 # from cls.LanguageProcessor import LanguageProcessor
 from classes.Suggestions import Suggestions
 from classes.Trends import Trends

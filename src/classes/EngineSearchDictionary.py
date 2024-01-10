@@ -1,13 +1,15 @@
 # cse (ascii - small keyboard)
 import json
+# import os
+# from dotenv import load_dotenv
 from googleapiclient.discovery import build
-# from google.oauth2 import service_account
 
 from config.config import CS_KEY, SA_CREDENTIALS
 
+# load_dotenv()
 
 class Engine:
-    
+
     def __init__(self, q, **enginekwargs):
         self.cx = CS_KEY
         self.credentials = SA_CREDENTIALS

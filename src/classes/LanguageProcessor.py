@@ -1,6 +1,8 @@
 # pip install -U pip setuptools wheel
 # pip install -U spacy
 # python -m spacy download en_core_web_sm
+# in requirements.txt: en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.7.1/en_core_web_sm-3.7.1-py3-none-any.whl#sha256=86cc141f63942d4b2c5fcee06630fd6f904788d2f0ab005cce45aadb8fb73889
+
 
 # Example: use spaCy for named entity recognition (NER)
 import spacy

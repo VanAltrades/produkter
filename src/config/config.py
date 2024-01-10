@@ -1,4 +1,27 @@
-from config.app_secrets import CS_KEY, SA_CREDENTIALS
+from google.oauth2 import service_account
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+# https://developers.google.com/custom-search/v1/overview#api_key
+CS_KEY = os.getenv("CS_KEY")
+
+
+# https://cloud.google.com/iam/docs/service-account-overview
+SA_CREDENTIALS_PATH=os.getenv("SA_CREDENTIALS_PATH")
+def load_credentials(sa_credentials_path=SA_CREDENTIALS_PATH):
+    return service_account.Credentials.from_service_account_file(
+        sa_credentials_path, 
+        scopes=["https://www.googleapis.com/auth/cse"]
+    )
+SA_CREDENTIALS = load_credentials()
+
+
+
+
+
+# from config.app_secrets import CS_KEY, SA_CREDENTIALS
 
 # TODO: database url if needed
 # implement:    https://levelup.gitconnected.com/implement-api-caching-with-redis-flask-and-docker-step-by-step-9139636cef24
