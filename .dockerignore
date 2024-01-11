@@ -1,0 +1,14 @@
+/docs
+app_secrets.py
+dukt_sa.json
+cs_key.json
+app_secrets.py
+/tests
+/todo
+/templates
+/app_versions
+__pycache__/
+*.pyc
+.git
+venv
+README.md

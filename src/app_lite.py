@@ -9,7 +9,7 @@ from utils.formatting import format_search_dictionary
 app = Flask(__name__)
 CORS(app)
 
-app.config["DEBUG"] = False # production = False
+app.config["DEBUG"] = True # production = False
 
 app.secret_key = base64.b64encode(os.urandom(24)).decode('utf-8') # Set a secret key for the session
 api_v1_bp = Blueprint('api_v1', __name__, url_prefix='/api/v0.1') # Define the base URL for the API version
@@ -64,4 +64,4 @@ def get_resources_results():
 app.register_blueprint(api_v1_bp)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)

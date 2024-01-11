@@ -66,4 +66,11 @@ cached files __pycache__
 README.md
 ```
 
+## Test Docker deployment
+```
+# from /produkter directory
+docker build -t produkter-lite .
+docker run -p 5000:5000 produkter-lite
+```
+
 ## Deploy from gcloud SDK
