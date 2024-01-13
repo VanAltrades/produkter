@@ -1,8 +1,7 @@
-Dockerfile
+<!-- Dockerfile -->
 /docs
 /tests
 /todo
-/templates
 /app_versions
 __pycache__/
 *.pyc

@@ -18,6 +18,18 @@ def load_credentials(sa_credentials_path=SA_CREDENTIALS_PATH):
 SA_CREDENTIALS = load_credentials()
 
 
+# Load default credentials from deployment's project
+# from google.auth import default
+# from google.auth.transport import requests
+# def load_credentials():
+#     try:
+#         # Attempt to get the default credentials, which will use ADC
+#         credentials, _ = default(scopes=["https://www.googleapis.com/auth/cse"])
+#         return credentials
+#     except Exception as e:
+#         print(f"Error loading default credentials: {e}")
+#         return None
+# SA_CREDENTIALS = load_credentials()
 
 
 

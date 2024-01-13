@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produkter API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center; /* Center the content */
+        }
+        h1, h2, ul {
+            margin-bottom: 10px;
+        }
+        ul {
+            padding: 0;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+        .image-container {
+            max-width: 1000px;
+            max-height: 1000px;
+            margin: 0 auto; /* Center the image container */
+        }
+        img {
+            max-width: 100%; /* Allow smaller images to retain their dimensions */
+            max-height: 1000px; /* Set the maximum height */
+            width: auto;
+            height: auto;
+        }
+        a {
+            word-break: break-all; /* Handle long URLs */
+        }
+    </style>
+</head>
+<body>
+    <h1>Data set successfully</h1>
+    <p>Produkt: {{ q }}</p>
+    
+    <p><b>1.</b>For structured product information JSON about the product navigate to:</p>
+        <code><a href="{{ url_for('search_endpoint') }}">{{ deployed_url }}search</a></code>
+
+    <p><b>2.</b>For product document links JSON about the product navigate to:</p>
+        <code><a href="{{ url_for('resources_endpoint') }}">{{ deployed_url }}resources</a></code>
+
+</body>
+</html>

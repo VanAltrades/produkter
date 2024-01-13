@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produkter API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center; /* Center the content */
+        }
+        h1, h2, ul {
+            margin-bottom: 10px;
+        }
+        ul {
+            padding: 0;
+        }
+        li {
+            margin-bottom: 5px;
+        }
+        .image-container {
+            max-width: 1000px;
+            max-height: 1000px;
+            margin: 0 auto; /* Center the image container */
+        }
+        img {
+            max-width: 100%; /* Allow smaller images to retain their dimensions */
+            max-height: 1000px; /* Set the maximum height */
+            width: auto;
+            height: auto;
+        }
+        a {
+            word-break: break-all; /* Handle long URLs */
+        }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the Produkter API</h1>
+    
+    <p><b>1.</b> The URL path of the deployed app: {{ deployed_url }}</p>
+    
+    <p><b>2.</b> To return product information about your intended item (<code>?q=</code>), follow the steps below.</p>
+
+    <p><b>2.a.</b> To set a product "?q" parameter, request the API like:</p>
+    <code>{{ deployed_url }}set_produkt?q={product brand}%20{product mpn}</code>
+    
+    <p><b>2.b.</b> Or set the product identifier query parameter here:</p>
+    <form action="{{ url_for('set_endpoint') }}" method="GET">
+        <label for="product_query">?q=</label>
+        <input type="text" id="product_query" name="q" placeholder="Enter product identifier">
+        <button type="submit">Set Produkt</button>
+    </form>
+
+    <p><b>3.</b> Then, once the product parameter has been set:</p>
+    <ul>
+        <li>navigate to <a href="{{ url_for('search_endpoint') }}">{{ deployed_url }}search</a> for structured product information JSON about the product.</li>
+        <li>navigate to <a href="{{ url_for('resources_endpoint') }}">{{ deployed_url }}resources</a> for document links JSON about the product.</li>
+    </ul>
+</body>
+</html>
