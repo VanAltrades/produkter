@@ -1,4 +1,6 @@
-from google.oauth2 import service_account
+import google.auth
+from google.auth.transport.requests import Request
+from google.auth.exceptions import GoogleAuthError
 from dotenv import load_dotenv
 import os
 
@@ -9,27 +11,28 @@ CS_KEY = os.getenv("CS_KEY")
 
 
 # https://cloud.google.com/iam/docs/service-account-overview
-SA_CREDENTIALS_PATH=os.getenv("SA_CREDENTIALS_PATH")
-def load_credentials(sa_credentials_path=SA_CREDENTIALS_PATH):
-    return service_account.Credentials.from_service_account_file(
-        sa_credentials_path, 
-        scopes=["https://www.googleapis.com/auth/cse"]
-    )
-SA_CREDENTIALS = load_credentials()
+# from google.oauth2 import service_account
+# SA_CREDENTIALS_PATH=os.getenv("SA_CREDENTIALS_PATH")
+# def load_credentials(sa_credentials_path=SA_CREDENTIALS_PATH):
+#     return service_account.Credentials.from_service_account_file(
+#         sa_credentials_path, 
+#         scopes=["https://www.googleapis.com/auth/cse"]
+#     )
+# SA_CREDENTIALS = load_credentials()
 
 
 # Load default credentials from deployment's project
-# from google.auth import default
-# from google.auth.transport import requests
-# def load_credentials():
-#     try:
-#         # Attempt to get the default credentials, which will use ADC
-#         credentials, _ = default(scopes=["https://www.googleapis.com/auth/cse"])
-#         return credentials
-#     except Exception as e:
-#         print(f"Error loading default credentials: {e}")
-#         return None
-# SA_CREDENTIALS = load_credentials()
+def get_google_credentials(scopes=["https://www.googleapis.com/auth/cse"]):
+    try:
+        credentials, _ = google.auth.default(scopes=scopes)
+        credentials.refresh(Request())
+        # return credentials.token
+        return credentials
+    except GoogleAuthError as e:
+        print(f"Failed to authenticate: {e}")
+        return None
+
+SA_CREDENTIALS = get_google_credentials()
 
 
 

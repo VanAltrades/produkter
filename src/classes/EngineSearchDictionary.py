@@ -46,6 +46,10 @@ class Engine:
 
 
     def search(self, q, **enginekwargs):        
+        # try:
+        #     d = self.service.cse().list(q=q, cx=self.cx, **enginekwargs).execute()
+        # except googleapiclient.errors.HttpError as e:
+        #     print(e.content)
         d = self.service.cse().list(q=q, cx=self.cx, **enginekwargs).execute()
         self.engine = d
         try:
