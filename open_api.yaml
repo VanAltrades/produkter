@@ -1,0 +1,31 @@
+# drupal reference: https://github.com/GoogleCloudPlatform/apigee-samples/blob/main/drupal-developer-portal/drupal-developer-portal.yaml
+openapi: 3.0.0
+info:
+  title: Produkter API
+  version: 0.0.1
+paths:
+  /set_produkt:
+    get:
+      summary: Set Produkt
+      parameters:
+        - name: q
+          in: query
+          required: true
+          description: The query parameter for setting the Produkt.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successfully set the Produkt.
+  /search:
+    get:
+      summary: Search
+      responses:
+        '200':
+          description: Successfully retrieve search results.
+  /resources:
+    get:
+      summary: Resources
+      responses:
+        '200':
+          description: Successfully retrieve asset links.
