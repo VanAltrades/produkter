@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, request, jsonify, session
+from flask import Flask, Blueprint, request, jsonify, session, render_template, redirect, url_for
 import os
 import base64
 from flask_cors import CORS
@@ -10,15 +10,25 @@ app = Flask(__name__)
 CORS(app)
 
 app.secret_key = base64.b64encode(os.urandom(24)).decode('utf-8') # Set a secret key for the session
-api_v1_bp = Blueprint('api_v1', __name__, url_prefix='/api/v0.1') # Define the base URL for the API version
+# api_v1_bp = Blueprint('api_v1', __name__, url_prefix='/api/v0.1') # Define the base URL for the API version
 
 current_script_directory = os.path.dirname(os.path.abspath(__file__)) # Get the absolute path to the directory of the current script
 
 os.chdir(current_script_directory) # Change the working directory to the directory of the current script
 
 
-@api_v1_bp.route('/set_produkt', methods=['GET'], endpoint='set_endpoint')
+@app.route('/')
+def home():
+    # Get the URL path of the deployed app
+    deployed_url = request.url_root
+
+    return render_template('home.html', deployed_url=deployed_url)
+
+
+@app.route('/set_produkt', methods=['GET'], endpoint='set_endpoint')
+# @api_v1_bp.route('/set_produkt', methods=['GET'], endpoint='set_endpoint')
 def set_produkt():
+    deployed_url = request.url_root
     # Get the 'q' parameter from the query string
     q = request.args.get('q')
 
@@ -29,10 +39,11 @@ def set_produkt():
     session['q'] = q
     session['i_search'] = i_search.__json__()
 
-    return f'Data set successfully.<br><br>Produkt: {q}'
+    return render_template('set_produkt.html', q=q, deployed_url=deployed_url)
 
 
-@api_v1_bp.route('/search', methods=['GET'], endpoint='search_endpoint')
+@app.route('/search', methods=['GET'], endpoint='search_endpoint')
+# @api_v1_bp.route('/search', methods=['GET'], endpoint='search_endpoint')
 def get_search_results():
     i_search = session['i_search']
 
@@ -43,7 +54,8 @@ def get_search_results():
         return jsonify({"error": "Produkt not initiated. First run /set_produkt/<product id>."})
 
 
-@api_v1_bp.route('/resources', methods=['GET'], endpoint='resources_endpoint')
+@app.route('/resources', methods=['GET'], endpoint='resources_endpoint')
+# @api_v1_bp.route('/resources', methods=['GET'], endpoint='resources_endpoint')
 def get_resources_results():
     q = session['q']
     i_engine_pdf = Engine(q, fileType="pdf")
@@ -59,7 +71,8 @@ def get_resources_results():
 
 
 # Register the blueprint with the Flask app
-app.register_blueprint(api_v1_bp)
+# app.register_blueprint(api_v1_bp)
 
+port = int(os.environ.get('PORT', 5000))
 if __name__ == '__main__':
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    app.run(debug=True, host="0.0.0.0", port=port)

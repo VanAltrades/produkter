@@ -1,55 +1,62 @@
 # PRODUKTER
 
+## Overview
+
+Produkter API allows developers to access product information in a structured JSON format.
+
+Examples include:
+
+1. `/search`
+
+* Return the most relevant titles, descriptions, images, and more from search results.
+
+2. `/resources`
+
+* Return the most relevant PDF resources associated with a product.
+
+3. `/schemas`
+
+* Return product schema (if it exists) ranging from price to gtins to reviews associated with a product. 
+
+4. `/texts`
+
+* Return text from relevant websites featuring a given product.
+
+5. `/suggestions`
+
+* Return relevant user search queries associated with a product.
+
+6. `/questions`
+
+* Return relevant question queries users ask about a product.
+
+7. `/comparisons`
+
+* Return comparison queries that users are looking for when comparing a product to another.
+
+8. `/interest`
+
+* TODO: Return weekly interest (search demand) for a given product.
+
+9. `/related`
+
+* TODO: Return related queries to a given product.
+
+10. `/rising`
+
+* TODO: Return queries associated with a given product that are rising in popularity.
+
+## Build Steps (Docker)
+
+[BUILD.md](docs\BUILD.md)
+
+## Deployment Steps (Cloud Run)
+
+[DEPLOY.md](docs\DEPLOY.md)
+
 ## Prioritized Improvement List
 
-~~#### 1. Change routes to maintain set_produkt/q/... structure:~~ not possible, using ?q=
-
-```
-@api_v1_bp.route('/set_produkt/<q>', endpoint='set_endpoint')
-
-@api_v1_bp.route('/set_produkt/<q>/search', methods=['GET'], endpoint='search_endpoint') 
-
-...
-```
-
-* Make sure this works for all sub routes and allows for a reset when new q is added.
-
-#### 2. Add in template routes to visualize responses in demos:
-
-```
-from flask import Flask, render_template, jsonify
-
-app = Flask(__name__, template_folder='src/templates')
-
-@app.route('/search')
-def search():
-    # Replace this with your actual API logic
-    json_response = {"key": "value", "another_key": "another_value"}
-    return jsonify(json_response)
-
-@app.route('/search_results')
-def search_results():
-    # Get the JSON response from the API endpoint
-    json_response = search().get_json()
-
-    # Render the search_results.html template with the JSON response
-    return render_template('search_results.html', json_response=json_response)
-
-if __name__ == '__main__':
-    app.run(debug=True)
-```
-
-~~#### 3. Explore ?q options instead of session route~~
-
-In the future I will want to cache results and this session route will lose it's importance. The responses are already larger than the cookies cache so each result is processing an api even if it was already run.
-
-#### 3.1. Remove q from Class keys and instead use jsonify from app.pt
-
-`jsonify({f"{session['q']}": results})`
-
-and remove `q` from classes so the Classes return only the results, not the keyword.
-
-#### 4. Implement redis caching
+#### 1. Implement redis caching
 
 * [Implementation](https://levelup.gitconnected.com/implement-api-caching-with-redis-flask-and-docker-step-by-step-9139636cef24)
 
@@ -57,17 +64,6 @@ and remove `q` from classes so the Classes return only the results, not the keyw
 
 This step will require a redis instance and should allow for running, *for example:* i_sites, i_suggestions, i_trends once and then calling back the instance for each subroute. Each cached instance json should have a unique `q` identifier as a key [ex](https://www.youtube.com/watch?v=_8lJ5lp8P0U). This should work until a new `q` is requested. 
 
-#### 5. Containerize the Application
-
-Before attempting to deploy the app to Cloud Run, I will have to containerize the app using docker.
-
-* Dockerfile review and update
-
-* .env file review and update 
-
-* config.app_secrets.py to os environment variables via .env file
-
-* config.config BaseConfig class inclusion in app.py
 
 ## SearchEngine
 

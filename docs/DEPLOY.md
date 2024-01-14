@@ -1,17 +1,35 @@
 # Produkter Lite
 
+## Configure Compute Engine Service Account for Cloud Run
+```
+XXXX-compute@developer.gserviceaccount.com
+
+Grant Service Account Token Creator. This role allows the service account to create short-lived credentials.
+roles/iam.serviceAccountTokenCreator
+
+
+```
+
 make sure `debug=False` for deployment
+
+## Deploy with gcloud
 
 From gcloud command line in repo directory:
 
 ```
 gcloud builds submit --tag gcr.io/ProjectID/produkter-lite  --project=ProjectID
-<!-- API [cloudbuild.googleapis.com] not enabled on project [produkter-406316]. -->
+gcloud builds submit --tag gcr.io/produkter-406316/produkter-lite  --project=produkter-406316
 
 gcloud run deploy --image gcr.io/ProjectID/produkter-lite --platform managed  --project=ProjectID --allow-unauthenticated
+gcloud run deploy --image gcr.io/produkter-406316/produkter-lite --platform managed  --project=produkter-406316 --allow-unauthenticated
+```
 
-gcloud run deploy --image gcr.io/ProjectID/produkter-lite --platform managed  --project=ProjectID --allow-unauthenticated --update-env-vars SA_CREDENTIALS_JSON="$(cat ./src/config/dukt_sa.json)"
-<!-- The following APIs are not enabled on project [produkter-406316]:run.googleapis.com -->
+## Set Environment Variables Once Deployed
+```
+> Edit & Deploy New Revision
+> Variables & Secrets
+> Add Variable
+[CS_KEY, PORT]
 ```
 
 ## Helpful gcloud commands
