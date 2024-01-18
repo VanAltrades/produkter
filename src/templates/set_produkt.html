@@ -42,11 +42,28 @@
     <h1>Data set successfully</h1>
     <p>Produkt: {{ q }}</p>
     
-    <p><b>1.</b>For structured product information JSON about the product navigate to:</p>
+    <p><b>1.</b>For structured product information JSON about the product, navigate to:</p>
         <code><a href="{{ url_for('search_endpoint') }}">{{ deployed_url }}search</a></code>
+        <br><br>
+        or explore a visual example of the response <a href="{{ url_for('search_results_endpoint') }}">
+            <button>here</button>
+        </a>
 
-    <p><b>2.</b>For product document links JSON about the product navigate to:</p>
+    <p><b>2.</b>For product document links JSON about the product, navigate to:</p>
         <code><a href="{{ url_for('resources_endpoint') }}">{{ deployed_url }}resources</a></code>
+        <br><br>
+        or explore a visual example of the response <a href="{{ url_for('resources_results_endpoint') }}">
+            <button>here</button>
+        </a>
+
+    <p><b>3.</b>For popular question queries about the product, navigate to:</p>
+        <code><a href="{{ url_for('questions_endpoint') }}">{{ deployed_url }}questions</a></code>
+    
+    <p><b>4.</b>For popular comparison queries including the product, navigate to:</p>
+        <code><a href="{{ url_for('comparisons_endpoint') }}">{{ deployed_url }}comparisons</a></code>
+
+    <p><b>5.</b>For popular search queries about the product, navigate to:</p>
+        <code><a href="{{ url_for('suggestions_endpoint') }}">{{ deployed_url }}suggestions</a></code>
 
 </body>
 </html>

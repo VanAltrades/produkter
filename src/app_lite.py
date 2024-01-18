@@ -55,6 +55,15 @@ def get_search_results():
         return jsonify({"error": "Produkt not initiated. First run /set_produkt/<product id>."})
 
 
+@app.route('/search_results', methods=['GET'], endpoint='search_results_endpoint')
+def show_search_results():
+    # Get the JSON response from the API endpoint
+    json_response = get_search_results().get_json()
+
+    # Render the search_results.html template with the JSON response
+    return render_template('search_results.html', json_response=json_response)
+
+
 @app.route('/resources', methods=['GET'], endpoint='resources_endpoint')
 # @api_v1_bp.route('/resources', methods=['GET'], endpoint='resources_endpoint')
 def get_resources_results():
@@ -69,6 +78,16 @@ def get_resources_results():
         return jsonify({f"{session['q']}": results_pdfs})
     else:
         return jsonify({"error": "Produkt not initiated. First run /set_produkt/<product id>."})
+
+
+# @api_v1_bp.route('/resources_results', methods=['GET'], endpoint='resources_results_endpoint')
+@app.route('/resources_results', methods=['GET'], endpoint='resources_results_endpoint')
+def show_resources_results():
+    # Get the JSON response from the API endpoint
+    json_response = get_resources_results().get_json()
+
+    # Render the search_results.html template with the JSON response
+    return render_template('pdfs_results.html', json_response=json_response)
 
 
 def get_suggestions_instance(q):
