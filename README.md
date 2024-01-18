@@ -54,6 +54,14 @@ Examples include:
 
 [DEPLOY.md](docs\DEPLOY.md)
 
+## Apigee Configuration
+
+[APIGEE_CONFIG.md](docs\APIGEE_CONFIG.MD)
+
+## Apigee Drupal Developer Portal Setup
+
+[PORTAL.md](docs\PORTAL.md)
+
 ## Prioritized Improvement List
 
 #### 1. Implement redis caching

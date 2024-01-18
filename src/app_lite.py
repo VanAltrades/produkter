@@ -4,6 +4,7 @@ import base64
 from flask_cors import CORS
 
 from classes.EngineSearchDictionary import Engine, SearchDictionary
+from classes.Suggestions import Suggestions
 from utils.formatting import format_search_dictionary
 
 app = Flask(__name__)
@@ -68,6 +69,87 @@ def get_resources_results():
         return jsonify({f"{session['q']}": results_pdfs})
     else:
         return jsonify({"error": "Produkt not initiated. First run /set_produkt/<product id>."})
+
+
+def get_suggestions_instance(q):
+    '''
+    get Suggestions instance from its existing session __json__() 
+    or make a new session instance of Suggestions
+    '''
+    q = session.get('q', None)
+    i_suggestions = session.get('i_suggestions', None)
+
+    # case where i_suggestions json already instantiated in session
+    if i_suggestions is not None:
+        return i_suggestions
+    # case where i_suggestions json not instantiated so try adding it to session
+    elif i_suggestions is None:
+        i_suggestions = Suggestions(q)
+        try: # try to cache sites json
+            session['i_suggestions'] = i_suggestions.__json__() 
+            return i_suggestions.__json__()
+        except: # no memory so just return json from sites instance and accept long load
+            return i_suggestions.__json__()
+
+    else:
+        return "Product not initiated. First run /set_product/<product id>"
+
+
+@app.route('/questions', methods=['GET'], endpoint='questions_endpoint')
+def get_questions():
+    q = session.get('q')
+    i_suggestions = get_suggestions_instance(q)
+
+    if isinstance(i_suggestions, str):
+        return jsonify({
+            "error":
+            i_suggestions
+            }) 
+    elif isinstance(i_suggestions, dict):        
+        return jsonify({
+            f"{session.get('q')}":
+            i_suggestions.get('questions',{})
+            }) 
+    else:
+        return jsonify({"error": "Invalid response from /questions."})
+
+
+@app.route('/comparisons', methods=['GET'], endpoint='comparisons_endpoint')
+def get_comparisons():
+    q = session.get('q')
+    i_suggestions = get_suggestions_instance(q)
+
+    if isinstance(i_suggestions, str):
+        return jsonify({
+            "error":
+            i_suggestions
+            }) 
+    elif isinstance(i_suggestions, dict):        
+        return jsonify({
+            f"{session.get('q')}":
+            i_suggestions.get('comparisons',{})
+            }) 
+    else:
+        return jsonify({"error": "Invalid response from /comparisons."})
+
+
+@app.route('/suggestions', methods=['GET'], endpoint='suggestions_endpoint')
+def get_suggestions():
+    q = session.get('q')
+    i_suggestions = get_suggestions_instance(q)
+
+    if isinstance(i_suggestions, str):
+        return jsonify({
+            "error":
+            i_suggestions
+            }) 
+    elif isinstance(i_suggestions, dict):        
+        return jsonify({
+            f"{session.get('q')}":
+            i_suggestions.get('suggestions',{})
+            }) 
+    else:
+        return jsonify({"error": "Invalid response from /suggestions."})
 
 
 # Register the blueprint with the Flask app
