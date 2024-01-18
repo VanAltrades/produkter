@@ -5,6 +5,7 @@ from flask_cors import CORS
 
 from classes.EngineSearchDictionary import Engine, SearchDictionary
 from classes.Suggestions import Suggestions
+from classes.Sites import Sites
 from utils.formatting import format_search_dictionary
 
 app = Flask(__name__)
@@ -43,6 +44,11 @@ def set_produkt():
     return render_template('set_produkt.html', q=q, deployed_url=deployed_url)
 
 
+#   ____  _____    _    ____   ____ _   _ 
+#  / ___|| ____|  / \  |  _ \ / ___| | | |
+#  \___ \|  _|   / _ \ | |_) | |   | |_| |
+#   ___) | |___ / ___ \|  _ <| |___|  _  |
+#  |____/|_____/_/   \_\_| \_\\____|_| |_|
 @app.route('/search', methods=['GET'], endpoint='search_endpoint')
 # @api_v1_bp.route('/search', methods=['GET'], endpoint='search_endpoint')
 def get_search_results():
@@ -64,6 +70,11 @@ def show_search_results():
     return render_template('search_results.html', json_response=json_response)
 
 
+#   ____  _____ ____   ___  _   _ ____   ____ _____ ____  
+#  |  _ \| ____/ ___| / _ \| | | |  _ \ / ___| ____/ ___| 
+#  | |_) |  _| \___ \| | | | | | | |_) | |   |  _| \___ \ 
+#  |  _ <| |___ ___) | |_| | |_| |  _ <| |___| |___ ___) |
+#  |_| \_\_____|____/ \___/ \___/|_| \_\\____|_____|____/ 
 @app.route('/resources', methods=['GET'], endpoint='resources_endpoint')
 # @api_v1_bp.route('/resources', methods=['GET'], endpoint='resources_endpoint')
 def get_resources_results():
@@ -90,6 +101,11 @@ def show_resources_results():
     return render_template('pdfs_results.html', json_response=json_response)
 
 
+#   ____  _   _  ____  ____ _____ ____ _____ ___ ___  _   _ ____  
+#  / ___|| | | |/ ___|/ ___| ____/ ___|_   _|_ _/ _ \| \ | / ___| 
+#  \___ \| | | | |  _| |  _|  _| \___ \ | |  | | | | |  \| \___ \ 
+#   ___) | |_| | |_| | |_| | |___ ___) || |  | | |_| | |\  |___) |
+#  |____/ \___/ \____|\____|_____|____/ |_| |___\___/|_| \_|____/
 def get_suggestions_instance(q):
     '''
     get Suggestions instance from its existing session __json__() 
@@ -170,6 +186,66 @@ def get_suggestions():
     else:
         return jsonify({"error": "Invalid response from /suggestions."})
 
+
+#   ____ ___ _____ _____ ____  
+#  / ___|_ _|_   _| ____/ ___| 
+#  \___ \| |  | | |  _| \___ \ 
+#   ___) | |  | | | |___ ___) |
+#  |____/___| |_| |_____|____/
+def get_sites_instance():
+    '''
+    get Sites instance from its existing session __json__() 
+    or make a new session instance of Sites
+    '''
+    # Get i_sites from session with a default value of None
+    i_sites = session.get('i_sites', None)
+    
+    # case where i_sites json already instantiated in session
+    if i_sites is not None:
+        return i_sites
+    # case where i_sites json not instantiated so try adding it to session
+    elif i_sites is None:
+        i_search = session['i_search']
+        i_sites = Sites(i_search)
+        try: # try to cache sites json
+            session['i_sites'] = i_sites.__json__() 
+            return i_sites.__json__()
+        except: # no memory so just return json from sites instance and accept long load
+            return i_sites.__json__()
+    else:
+        return "Product not initiated. First run /set_product/<product name>"
+
+
+@app.route('/schemas', methods=['GET'], endpoint='schema_endpoint')
+def get_schema_results():
+    i_sites = get_sites_instance()
+    
+    if isinstance(i_sites, str):
+        return jsonify({
+            "error":
+            i_sites
+            })
+    elif isinstance(i_sites, dict):
+        sites_schema_dict_formatted_wo_nones = format_search_dictionary(i_sites['schemas'], keep_none_values=False)
+        return jsonify({
+            f"{session.get('q')}":
+            sites_schema_dict_formatted_wo_nones
+            })
+    else:
+        return jsonify({"error":"Invalid response from /schemas."})
+
+
+@app.route('/texts', methods=['GET'], endpoint='text_endpoint')
+def get_text_results():
+    i_sites = get_sites_instance()
+    
+    if isinstance(i_sites, str):
+        return jsonify({"error":i_sites})
+    elif isinstance(i_sites, dict):
+        # sites_text_dict_formatted_wo_nones = format_search_dictionary(i_sites['texts'], keep_none_values=False)
+        return jsonify({f"{session.get('q')}":i_sites['texts']})
+    else:
+        return jsonify({"error":"Invalid response from /texts."}) 
 
 # Register the blueprint with the Flask app
 # app.register_blueprint(api_v1_bp)
