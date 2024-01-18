@@ -1,5 +1,5 @@
 #!/bin/bash
-# to run: `chmod +x deploy.sh`
+# to run: `chmod +x deploy.sh` then `./deploy.sh`
 
 # Set your project ID
 PROJECT_ID="produkter-406316"
@@ -30,4 +30,4 @@ gcloud run deploy $SERVICE_NAME \
   --platform managed \
   --region $REGION \
   --allow-unauthenticated \
-  -e CS_KEY=$CS_KEY
+  --update-env-vars CS_KEY=$CS_KEY
