@@ -14,7 +14,16 @@ make sure `debug=False` for deployment
 
 ## Deploy with gcloud
 
-From gcloud command line in repo directory:
+From deploy_app_lite.sh file in repo directory:
+
+Update environment vars in .sh script. Then...
+
+```
+$ chmod +x deploy.sh
+$ ./deploy.sh
+```
+
+or from gcloud command line in repo directory:
 
 ```
 gcloud builds submit --tag gcr.io/ProjectID/produkter-lite  --project=ProjectID
