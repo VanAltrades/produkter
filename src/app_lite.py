@@ -216,8 +216,8 @@ def get_sites_instance():
         return "Product not initiated. First run /set_product/<product name>"
 
 
-@app.route('/schemas', methods=['GET'], endpoint='schema_endpoint')
-def get_schema_results():
+@app.route('/schemas', methods=['GET'], endpoint='schemas_endpoint')
+def get_schemas_results():
     i_sites = get_sites_instance()
     
     if isinstance(i_sites, str):
@@ -235,8 +235,8 @@ def get_schema_results():
         return jsonify({"error":"Invalid response from /schemas."})
 
 
-@app.route('/texts', methods=['GET'], endpoint='text_endpoint')
-def get_text_results():
+@app.route('/texts', methods=['GET'], endpoint='texts_endpoint')
+def get_texts_results():
     i_sites = get_sites_instance()
     
     if isinstance(i_sites, str):
