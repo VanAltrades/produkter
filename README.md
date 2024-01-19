@@ -72,6 +72,20 @@ Examples include:
 
 This step will require a redis instance and should allow for running, *for example:* i_sites, i_suggestions, i_trends once and then calling back the instance for each subroute. Each cached instance json should have a unique `q` identifier as a key [ex](https://www.youtube.com/watch?v=_8lJ5lp8P0U). This should work until a new `q` is requested. 
 
+#### 2. Explore JSON Extraction via CSE structured 
+
+[Structured Search](https://developers.google.com/custom-search/docs/structured_search)
+
+[JSON API Using REST](https://developers.google.com/custom-search/v1/using_rest) mentions:
+
+Search engine metadata
+
+The context property has metadata describing the search engine that performed the search query. It includes the name of the search engine, and any [facet objects](https://developers.google.com/custom-search/docs/refinements#create) it provides for refining a search.
+
+from this doc page
+
+
+
 
 ## SearchEngine
 
