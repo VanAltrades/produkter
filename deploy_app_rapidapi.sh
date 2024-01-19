@@ -1,6 +1,8 @@
 #!/bin/bash
 # to run: `chmod +x deploy.sh` then `./deploy.sh`
 
+# be sure to update dockerfile to correct file first
+
 # Set your project ID
 PROJECT_ID="produkter-406316"
 

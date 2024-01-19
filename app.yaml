@@ -1,2 +1,3 @@
 runtime: python310
+# app_lite deploy
 entrypoint: gunicorn -b :$PORT src.app_lite:app
