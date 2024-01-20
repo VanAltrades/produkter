@@ -45,8 +45,6 @@ class Suggestions:
     
 
     def get_questions(self):
-        result_dict = {}
-
         for keyword in self.keyword_list:
             unique_kws = set()  # Use a set to ensure uniqueness
 
@@ -60,14 +58,12 @@ class Suggestions:
                 if kws:
                     unique_kws.update(kws)
 
-            result_dict[keyword] = list(unique_kws)
+            result_list = list(unique_kws)
 
-        return result_dict
+        return result_list
 
 
     def get_comparisons(self):
-        result_dict = {}
-
         for keyword in self.keyword_list:
             unique_kws = set()  # Use a set to ensure uniqueness
 
@@ -81,13 +77,12 @@ class Suggestions:
                 if kws:
                     unique_kws.update(kws)
 
-            result_dict[keyword] = list(unique_kws)
+            result_list = list(unique_kws)
 
-        return result_dict
+        return result_list
 
 
     def get_suggestions(self):
-        result_dict = {}
         characters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'y', 'x', 'y', 'z']
 
         for keyword in self.keyword_list:
@@ -111,6 +106,6 @@ class Suggestions:
                 kws = suggestions[1]
                 keyword_set.update(kws)
 
-            result_dict[keyword] = sorted(list(keyword_set))
+            result_list = sorted(list(keyword_set))
 
-        return result_dict
+        return result_list

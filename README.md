@@ -1,6 +1,6 @@
-# PRODUKTER
+    # PRODUKTER
 
-## Overview
+    ## Overview
 
 Produkter API allows developers to access product information in a structured JSON format.
 
@@ -82,9 +82,32 @@ Search engine metadata
 
 The context property has metadata describing the search engine that performed the search query. It includes the name of the search engine, and any [facet objects](https://developers.google.com/custom-search/docs/refinements#create) it provides for refining a search.
 
-from this doc page
 
+#### 3. Skip Sites Retry links
 
+```
+https://produkter-lite-lwvz7mjmrq-uc.a.run.app/set_produkt?q=AMEREX+B570+fire+extinguisher
+
+https://produkter-lite-lwvz7mjmrq-uc.a.run.app/set_produkt?q=MILLER+ELECTRIC+301568+mig+cable 
+
+urllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='www.millerwelds.com', port=443): Max retries exceeded with url: /accessories/mig-welding-accessories/mig-guns/push-pull-guns/xr-aluma-pro-push-pull-guns-m17300 (Caused by SSLError(SSLCertVerificationError(1, '[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1007)')))
+
+urllib3.exceptions.SSLError: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: unable to get local issuer certificate (_ssl.c:1007)
+
+at ._make_request ( /usr/local/lib/python3.10/site-packages/urllib3/connectionpool.py:491 )
+at .urlopen ( /usr/local/lib/python3.10/site-packages/urllib3/connectionpool.py:790 )
+```
+
+#### 4. Control for NoneType responses
+
+```
+TypeError: 'NoneType' object is not iterable
+
+at .get_dictionary_dict ( /produkter/src/classes/EngineSearchDictionary.py:99 )
+at .__init__ ( /produkter/src/classes/EngineSearchDictionary.py:70 )
+at .set_produkt ( /produkter/src/app_lite.py:38 )
+at .wrapped_function ( /usr/local/lib/python3.10/site-packages/flask_cors/extension.py:176 )
+```
 
 
 ## SearchEngine

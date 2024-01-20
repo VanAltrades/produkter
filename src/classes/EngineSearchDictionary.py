@@ -27,24 +27,6 @@ class Engine:
         }
     
 
-    @staticmethod
-    def save_to_json(data, output_file):
-        with open(output_file, 'w') as json_file:
-            json.dump(data, json_file, indent=2)
-
-
-    @staticmethod
-    def load_json_from_file(file_path):
-        with open(file_path, 'r') as file:
-            data = json.load(file)
-        return data
-
-
-    @staticmethod
-    def print_json(js):
-        print(json.dumps(js, indent=2))
-
-
     def search(self, q, **enginekwargs):        
         # try:
         #     d = self.service.cse().list(q=q, cx=self.cx, **enginekwargs).execute()
