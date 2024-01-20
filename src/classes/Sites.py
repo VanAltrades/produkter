@@ -36,16 +36,22 @@ class Sites:
 
     def get_url_soup(self, url):
         headers = {'User-Agent': self.ua.random}
-        # Send a GET request to the URL
-        response = requests.get(url, headers=headers)
 
-        # Check if the request was successful (status code 200)
-        if response.status_code == 200:
-            # Parse the HTML content of the page
-            soup = BeautifulSoup(response.text, 'html.parser')
-            return soup
-        else:
-            print(f"Failed to retrieve the page: \n{url}. \n\nStatus Code: {response.status_code}")
+        try:
+            # Send a GET request to the URL with SSL verification disabled
+            response = requests.get(url, headers=headers, verify=False)
+
+            # Check if the request was successful (status code 200)
+            if response.status_code == 200:
+                # Parse the HTML content of the page
+                soup = BeautifulSoup(response.text, 'html.parser')
+                return soup
+            else:
+                print(f"Failed to retrieve the page: \n{url}. \n\nStatus Code: {response.status_code}")
+                return None
+
+        except requests.exceptions.SSLError as e:
+            print(f"SSL certificate verification failed for {url}: {e}")
             return None
         
 
@@ -63,12 +69,21 @@ class Sites:
 
     def get_schema(self, soup):
         if soup is not None:
-            soup_script = soup.find("script", {"type":"application/ld+json"})            
+            soup_script = soup.find("script", {"type": "application/ld+json"})
             if soup_script is not None:
                 json_data = "".join(soup_script.contents)
                 cleaned_json_data = re.sub(r'[^\x20-\x7E]', '', json_data)
-                schema = json.loads(cleaned_json_data)
-                return schema
+
+                if cleaned_json_data:  # Check if the cleaned JSON data is not empty
+                    try:
+                        schema = json.loads(cleaned_json_data)
+                        return schema
+                    except json.JSONDecodeError as e:
+                        print(f"Error decoding JSON: {e}")
+                        return None
+                else:
+                    print("Cleaned JSON data is empty.")
+                    return None
             else:
                 return None
         else:

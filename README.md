@@ -109,6 +109,7 @@ at .set_produkt ( /produkter/src/app_lite.py:38 )
 at .wrapped_function ( /usr/local/lib/python3.10/site-packages/flask_cors/extension.py:176 )
 ```
 
+#### 5. Add configurable cse parameters (excludes/includes)
 
 ## SearchEngine
 
