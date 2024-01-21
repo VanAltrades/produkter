@@ -14,8 +14,9 @@ def response_to_json(response):
     return json_object
 
 
-q = "AMEREX B570 fire extinguisher"
-q = "MILLER ELECTRIC 301568 mig cable" 
+q = "AMEREX B570 fire extinguisher"     # [fixed] SSL Error from logs
+q = "MILLER ELECTRIC 301568 mig cable"  # [fixed] SSL Error from logs
+q = "ALLIED TUBE & CONDUIT 6103-24-00 conduit"  # TypeError: 'NoneType' object is not iterable (get_dictionary_dict)
 q = "milwaukee m18 fuel"
 q = "AMD Ryzen 9 5900X"
 q = "Huy Fong HFSR3G"
@@ -116,29 +117,18 @@ else:
 
 
 if isinstance(i_sites, str):
-    jsonify({"error":i_sites})
+    print(response_to_json({"error":i_sites}))
 elif isinstance(i_sites, dict):
     # sites_text_dict_formatted_wo_nones = format_search_dictionary(i_sites['texts'], keep_none_values=False)
-    jsonify({f"{q}":i_sites['texts']})
+    print(response_to_json({f"{q}":i_sites['texts']}))
 else:
-    jsonify({"error":"Invalid response from /texts."}) 
+    print(response_to_json({"error":"Invalid response from /texts."})) 
 
 
-sites_instance = Sites(i_search)
-sites_instance.links
-sites_instance.titles
-sites_instance.dictionary_schemas
-sites_schema_dict_formatted = Formatter(sites_instance.dictionary_schemas)
-# sites_schema_dict_formatted_wo_nones = sites_schema_dict_formatted.format(keep_none_values=False)
-sites_schema_dict_formatted_w_nones = sites_schema_dict_formatted.format(keep_none_values=True)
-schema_result = response_to_json(sites_schema_dict_formatted_w_nones)
-### ^ route response
-
-sites_instance.dictionary_texts
 
 # LanguageProcess
 # items
-lp = LanguageProcessor(sites_instance, q)
+lp = LanguageProcessor(i_sites, q)
 lp.items
 
 # Suggests
