@@ -26,6 +26,8 @@ q = "Okuma PCH-C-741XXXH"
 q = "Zero Degree 38152"
 
 
+# /search?q=garmin forerunner
+
 # search
 i_engine = Engine(q)
 i_search = SearchDictionary(i_engine).__json__()
@@ -140,6 +142,10 @@ r.set("i_search_links",json.dumps(i_search.__json__()['links']))
 r.get("q")
 r.get("i_search_results")
 r.get("i_search_links")
+
+# Set an expiration time of 1 hour (3600 seconds) for the key
+r.expire(q_key, 3600)
+
 
 # session['q'] = q
 # session['i_search'] = i_search.__json__()

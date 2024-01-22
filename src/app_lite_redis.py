@@ -13,7 +13,10 @@ from utils.formatting import format_search_dictionary
 app = Flask(__name__)
 CORS(app)
 
-r = redis.Redis(host='localhost', port=6379, db=0)
+redis_host = os.environ.get("REDISHOST", "localhost")
+redis_port = int(os.environ.get("REDISPORT", 6379))
+redis_client = redis.StrictRedis(host=redis_host, port=redis_port)
+# r = redis.Redis(host='localhost', port=6379, db=0)
 
 app.secret_key = base64.b64encode(os.urandom(24)).decode('utf-8') # Set a secret key for the session
 # api_v1_bp = Blueprint('api_v1', __name__, url_prefix='/api/v0.1') # Define the base URL for the API version
@@ -31,10 +34,10 @@ rkey_i_sites = "i_sites"
 valid_rkeys = [rkey_i_search_results, rkey_i_search_links, rkey_i_search_pdfs, rkey_i_suggestions, rkey_i_sites]
 
 def set_redis_cache_expiry(expiration_time_seconds=60):
-    rkeys = r.keys("*")
+    rkeys = redis_client.keys("*")
     # Set expiration for each key
     for key in rkeys:
-        r.expire(key, expiration_time_seconds)
+        redis_client.expire(key, expiration_time_seconds)
 
 
 def set_q_value_in_cache(q):
@@ -43,20 +46,20 @@ def set_q_value_in_cache(q):
     if so, proceed.
     if not, reset `q` value and delete all previous cached keys/values.
     '''
-    cached_q_value = r.get('q')
+    cached_q_value = redis_client.get('q')
     print(cached_q_value)
     
     if cached_q_value is None:
-        r.set('q',q)
+        redis_client.set('q',q)
         return    
     
     if q and q == cached_q_value.decode('utf-8'): # reusing `q` in cache
         return
     
     else: # requested `q` is different from `q` in cache
-        r.set('q', q)
+        redis_client.set('q', q)
         for key in valid_rkeys:
-            r.delete(key)
+            redis_client.delete(key)
 
 
 def get_rkey_value_from_redis_cache_else_compute(q, rkey):
@@ -68,7 +71,7 @@ def get_rkey_value_from_redis_cache_else_compute(q, rkey):
     if rkey not in valid_rkeys:
         raise ValueError(f"Invalid value for 'rkey'. It must be one of {valid_rkeys}")
 
-    cached_result = r.get(rkey)
+    cached_result = redis_client.get(rkey)
 
     if cached_result:
         return json.loads(cached_result.decode('utf-8'))  # Parse the JSON string to a dictionary
@@ -103,7 +106,7 @@ def get_rkey_value_from_redis_cache_else_compute(q, rkey):
         return None
 
     # Store the rkey_value as a JSON string in the cache
-    r.set(rkey, json.dumps(rkey_value))
+    redis_client.set(rkey, json.dumps(rkey_value))
 
     return rkey_value
 
