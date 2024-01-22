@@ -125,32 +125,43 @@ else:
     print(response_to_json({"error":"Invalid response from /texts."})) 
 
 
+# redis cache
+import redis
+
+i_engine = Engine(q)
+i_search = SearchDictionary(i_engine)
+
+r = redis.Redis(host='localhost', port=6379, db=0)
+
+r.set("q",q)
+r.set("i_search_results",json.dumps(i_search.__json__()['dictionary']))
+r.set("i_search_links",json.dumps(i_search.__json__()['links']))
+
+r.get("q")
+r.get("i_search_results")
+r.get("i_search_links")
+
+# session['q'] = q
+# session['i_search'] = i_search.__json__()
+
 
 # LanguageProcess
 # items
-lp = LanguageProcessor(i_sites, q)
-lp.items
+# lp = LanguageProcessor(i_sites, q)
+# lp.items
 
-# Suggests
-suga = Suggestions(lp)
-suga.question_queries
-questions_result = response_to_json(suga.question_queries)
-suga.comparison_queries
-comparison_result = response_to_json(suga.comparison_queries)
-suga.suggested_queries
-suggestion_result = response_to_json(suga.suggested_queries)
 ### ^ route response
 
 # Trends
-trends_instance = Trends(keyword="langer gaming mouse")
-trends_instance.keyword_dictionary
+# trends_instance = Trends(keyword="langer gaming mouse")
+# trends_instance.keyword_dictionary
 
 
-trends_instance.keyword_related_dictionary
-trends_instance.keyword_rising_dictionary
+# trends_instance.keyword_related_dictionary
+# trends_instance.keyword_rising_dictionary
 
-trends_instance.payload_interest
-trends_instance.interest_dictionary
+# trends_instance.payload_interest
+# trends_instance.interest_dictionary
 # related_result = response_to_json(trends_instance.keyword_related_dictionary)
 # trends_instance.keyword_rising_dictionary
 # rising_result = response_to_json(trends_instance.keyword_rising_dictionary)
