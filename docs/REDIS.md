@@ -33,43 +33,25 @@ PONG
 
 ## Prerequisite Steps to Deploy App to Cloud Run with Redis instance
 
-## [Create Direct VPC egress with a Shared VPC network](https://cloud.google.com/run/docs/configuring/shared-vpc-direct-vpc)
+## [Create private service access VPC](https://cloud.google.com/vpc/docs/configure-private-services-access#modifying-connection)
 
 Redis Instances in MemoryStore require private IP address space via VPC.
 
-Option 1. [Make shared VPC Host Project](https://console.cloud.google.com/networking/xpn/details?project=produkter-406316)
+Save private ip for later --ranges
 
-
-Option 2. [TRIED SERVERLESS BELOW BUT DIDN'T WORK WHEN CREATING MEMSTORE]
+[Solution?](https://cloud.google.com/knowledge/kb/unable-to-create-redis-instance-with-private-service-access-due-to-allocated-private-ip-address-space-being-exhausted-000004746)
 
 ```
-Server response: Unable to create/update instance. The allocated private IP address space is exhausted. For information on expanding the allocation, see https://cloud.google.com/vpc/docs/configure-private-services-access#modify-ip-range.
-``` 
-
+$ gcloud services vpc-peerings update \
+    --service=servicenetworking.googleapis.com \
+    --ranges=10.128.0.0/20 \
+    --network=redis-vpc-network \
+    --project=produkter-406316 \
+    --force
+```
 If you're using Serverless VPC Access, create a connector. Be sure to use the same region and VPC network as the one used by the Redis instance. Make a note of the connector's name.
 
 [configure serverless vpc access](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access#gcloud)
-
-within: [console > vpc network > serverless vpc access](https://console.cloud.google.com/networking/connectors/list?project=produkter-406316)
-
-name: `redis-produkter-lite-conn`
-
-region: `us-central1`
-
-network: `default`
-
-subnet: `10.128.0.0/20`
-
-min instances: `2`
-
-max instance: `3`
-
-```
-gcloud compute networks vpc-access connectors create CONNECTOR_NAME \
---network VPC_NETWORK \
---region REGION \
---range IP_RANGE
-```
 
 ## [create cloud memorystore instance](https://cloud.google.com/memorystore/docs/redis/create-instance-console)
 
@@ -80,17 +62,31 @@ tier: `basic`
 
 capacity: `1 GB`
 
-network: `default`
+network: `redis-vpc-network`
+
+## Deploying App to Cloud Run with Redis instance
+
+connect to new redis after deploying cloudrun: [Connect to a Redis cache using Memorystore](https://cloud.google.com/run/docs/integrate/redis-memorystore) 
+
+Connecting to an existing redis instance did not work (steps below) because the --network and --subnet arguments provided in the link below are not recognized.
 
 ```
-gcloud redis instances describe INSTANCE_ID --region REGION --format "value(authorizedNetwork)"
+# gcloud run deploy \
+# --image gcr.io/$PROJECT_ID/$IMAGE_NAME \
+# --platform managed \
+# --allow-unauthenticated \
+# --region $REGION \
+# --network $NETWORK \
+# --subnet $SUBNET \
+# --set-env-vars CS_KEY=$CS_KEY,REDISHOST=$REDIS_IP,REDISPORT=$REDIS_PORT
 ```
 
 [connect redis to cloud run](https://cloud.google.com/memorystore/docs/redis/connect-redis-instance-cloud-run)
 
+```
+gcloud redis instances describe INSTANCE_ID --region REGION --format "value(authorizedNetwork)"
 
-## Deploying App to Cloud Run with Redis instance
+> projects/produkter-406316/global/networks/redis-vpc-network
+```
 
 Then build and deploy the cloud run instance.
-
-If using memorystore, be sure `--network`, `--subnet`, `--set-env-vars` are defined in .sh script or gcloud command.
