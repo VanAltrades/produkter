@@ -31,7 +31,13 @@ PONG
 
 [pypi](https://pypi.org/project/redis/)
 
-## Prerequisite Steps to Deploy App to Cloud Run with Redis instance
+## Steps to Deploy App to Cloud Run with Redis instance
+
+1. Create Private Service Access VPC
+
+2. Deploy Cloud Run Containerized API
+
+3. Connect to New Redis after Deploying Cloud Run
 
 ## [Create private service access VPC](https://cloud.google.com/vpc/docs/configure-private-services-access#modifying-connection)
 
@@ -49,6 +55,48 @@ $ gcloud services vpc-peerings update \
     --project=produkter-406316 \
     --force
 ```
+
+## Deploy App (via .sh script `gcloud` command)
+
+## Connect to New Redis after Deploying Cloud Run
+
+[Connect to a Redis cache using Memorystore](https://cloud.google.com/run/docs/integrate/redis-memorystore) 
+
+Update to the latest Google Cloud CLI:
+
+
+```gcloud components update```
+
+Create the integration:
+
+```
+gcloud beta run integrations create \
+--type=redis \
+--service=SERVICE \
+--parameters=memory-size-gb=MEMORYSIZE
+```
+
+Replace
+
+`SERVICE` with your Cloud Run service name.
+`MEMORYSIZE` with the desired size in gigabytes of the cache. The default is 1 GB.
+
+Wait up to 15 minutes, during which time a fully configured Redis cache is created and connected. In addition, a new Cloud Run revision is created, including networking configuration and environment variables needed for the Redis cache. When the process is complete, the following message is shown:
+
+```
+[redis] integration [redis-xxx] has been updated successfully.
+
+To connect to the Redis instance, utilize the environment variables
+REDISHOST and REDISPORT. These have been added to the Cloud Run service
+for you.
+```
+
+You can check the status using `gcloud beta run integrations describe`
+
+# Did not work methods
+
+## Making a Serverless VPC 
+
 If you're using Serverless VPC Access, create a connector. Be sure to use the same region and VPC network as the one used by the Redis instance. Make a note of the connector's name.
 
 [configure serverless vpc access](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access#gcloud)
@@ -64,9 +112,7 @@ capacity: `1 GB`
 
 network: `redis-vpc-network`
 
-## Deploying App to Cloud Run with Redis instance
-
-connect to new redis after deploying cloudrun: [Connect to a Redis cache using Memorystore](https://cloud.google.com/run/docs/integrate/redis-memorystore) 
+## Deploying Cloud Run and connecting to existing redis instance
 
 Connecting to an existing redis instance did not work (steps below) because the --network and --subnet arguments provided in the link below are not recognized.
 

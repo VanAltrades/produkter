@@ -28,34 +28,12 @@ fi
 gcloud builds submit --tag gcr.io/$PROJECT_ID/$IMAGE_NAME  --project=$PROJECT_ID
 
 # Deploy to Cloud Run
-
 gcloud run deploy $SERVICE_NAME \
   --image gcr.io/$PROJECT_ID/$IMAGE_NAME \
   --platform managed \
   --allow-unauthenticated \
   --region $REGION \
   --set-env-vars CS_KEY=$CS_KEY,REDISHOST=$REDIS_IP,REDISPORT=$REDIS_PORT
-
-
-# gcloud run deploy $SERVICE_NAME \
-#   --image gcr.io/$PROJECT_ID/$IMAGE_NAME \
-#   --platform managed \
-#   --allow-unauthenticated \
-#   --region $REGION \
-#   --network $NETWORK \
-#   --subnet $SUBNET \
-#   --set-env-vars CS_KEY=$CS_KEY,REDISHOST=$REDIS_IP,REDISPORT=$REDIS_PORT
-
-# gcloud run deploy \
-# --image gcr.io/$PROJECT_ID/$IMAGE_NAME \
-# --platform managed \
-# --allow-unauthenticated \
-# --region $REGION \
-# --network $NETWORK \
-# --subnet $SUBNET \
-# --set-env-vars CS_KEY=$CS_KEY,REDISHOST=$REDIS_IP,REDISPORT=$REDIS_PORT
-
-# gcloud run deploy --image gcr.io/$PROJECT_ID/$IMAGE_NAME --platform managed --allow-unauthenticated --region $REGION --network $NETWORK --subnet $SUBNET --set-env-vars CS_KEY=$CS_KEY,REDISHOST=$REDIS_IP,REDISPORT=$REDIS_PORT
 
 # Create the Redis integration for Cloud Run:
 gcloud beta run integrations create \

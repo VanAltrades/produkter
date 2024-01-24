@@ -33,7 +33,7 @@ rkey_i_suggestions = "i_suggestions"
 rkey_i_sites = "i_sites"
 valid_rkeys = [rkey_i_search_results, rkey_i_search_links, rkey_i_search_pdfs, rkey_i_suggestions, rkey_i_sites]
 
-def set_redis_cache_expiry(expiration_time_seconds=60):
+def set_redis_cache_expiry(expiration_time_seconds=30):
     rkeys = redis_client.keys("*")
     # Set expiration for each key
     for key in rkeys:
@@ -132,7 +132,7 @@ def get_search_results():
 
     rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_search_results)
 
-    set_redis_cache_expiry(expiration_time_seconds=60)
+    set_redis_cache_expiry(expiration_time_seconds=30)
 
     if rkey_value is not None:
         
@@ -165,7 +165,7 @@ def get_resources_results():
 
     rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_search_pdfs)
 
-    set_redis_cache_expiry(expiration_time_seconds=60)
+    set_redis_cache_expiry(expiration_time_seconds=30)
 
     if rkey_value is not None:
         return jsonify({f"{q}": rkey_value})
@@ -195,7 +195,7 @@ def get_questions():
 
     rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_suggestions)
 
-    set_redis_cache_expiry(expiration_time_seconds=60)
+    set_redis_cache_expiry(expiration_time_seconds=30)
 
     if rkey_value is not None:
         results = rkey_value.get('questions',{})
@@ -211,7 +211,7 @@ def get_comparisons():
 
     rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_suggestions)
 
-    set_redis_cache_expiry(expiration_time_seconds=60)
+    set_redis_cache_expiry(expiration_time_seconds=30)
 
     if rkey_value is not None:
         results = rkey_value.get('comparisons',{})
@@ -227,7 +227,7 @@ def get_suggestions():
 
     rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_suggestions)
 
-    set_redis_cache_expiry(expiration_time_seconds=60)
+    set_redis_cache_expiry(expiration_time_seconds=30)
     
     if rkey_value is not None:
         results = rkey_value.get('suggestions',{})
@@ -248,7 +248,7 @@ def get_schemas_results():
 
     rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_sites)
 
-    set_redis_cache_expiry(expiration_time_seconds=60)
+    set_redis_cache_expiry(expiration_time_seconds=30)
     
     if rkey_value is not None:
         results = format_search_dictionary(rkey_value['schemas'], keep_none_values=False)
@@ -264,7 +264,7 @@ def get_texts_results():
 
     rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_sites)
 
-    set_redis_cache_expiry(expiration_time_seconds=60)
+    set_redis_cache_expiry(expiration_time_seconds=30)
     
     if rkey_value is not None:
         results = rkey_value['texts']
