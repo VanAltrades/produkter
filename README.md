@@ -1,6 +1,6 @@
-    # PRODUKTER
+# PRODUKTER
 
-    ## Overview
+## Overview
 
 Produkter API allows developers to access product information in a structured JSON format.
 
@@ -54,17 +54,57 @@ Examples include:
 
 [DEPLOY.md](docs\DEPLOY.md)
 
-## Apigee Configuration
+## Deployment Steps with Redis Memory Cache (Cloud Run + Memorystore)
+
+[REDIS.md](docs\REDIS.md)
+
+
+## ~~Apigee Configuration~~
 
 [APIGEE_CONFIG.md](docs\APIGEE_CONFIG.MD)
 
-## Apigee Drupal Developer Portal Setup
+## ~~Apigee Drupal Developer Portal Setup~~
 
 [PORTAL.md](docs\PORTAL.md)
 
 ## Prioritized Improvement List
 
-#### 1. Implement redis caching
+#### * 2 official deployments
+
+Remove /set_produkt code.
+
+Update show_results endpoints.
+
+1. rapid api deployment
+
+* redis caching
+* debug=False
+* no html results endpoints
+
+2. demo deployment
+
+* redis caching
+* debug=False
+* html results endpoints
+
+
+#### * Add configurable cse parameters (excludes/includes)
+
+#### * Control for NoneType responses
+
+```
+TypeError: 'NoneType' object is not iterable
+
+https://produkter-lite-lwvz7mjmrq-uc.a.run.app/set_produkt?q=ALLIED+TUBE+%26+CONDUIT+6103-24-00+conduit
+
+at .get_dictionary_dict ( /produkter/src/classes/EngineSearchDictionary.py:99 )
+at .__init__ ( /produkter/src/classes/EngineSearchDictionary.py:70 )
+at .set_produkt ( /produkter/src/app_lite.py:38 )
+at .wrapped_function ( /usr/local/lib/python3.10/site-packages/flask_cors/extension.py:176 )
+```
+
+
+#### ~~Implement redis caching~~
 
 * [Implementation](https://levelup.gitconnected.com/implement-api-caching-with-redis-flask-and-docker-step-by-step-9139636cef24)
 
@@ -72,7 +112,7 @@ Examples include:
 
 This step will require a redis instance and should allow for running, *for example:* i_sites, i_suggestions, i_trends once and then calling back the instance for each subroute. Each cached instance json should have a unique `q` identifier as a key [ex](https://www.youtube.com/watch?v=_8lJ5lp8P0U). This should work until a new `q` is requested. 
 
-#### 2. ~~Explore JSON Extraction via CSE structured~~ 
+#### ~~Explore JSON Extraction via CSE structured~~ 
 
 [Structured Search](https://developers.google.com/custom-search/docs/structured_search)
 
@@ -83,7 +123,7 @@ Search engine metadata
 The context property has metadata describing the search engine that performed the search query. It includes the name of the search engine, and any [facet objects](https://developers.google.com/custom-search/docs/refinements#create) it provides for refining a search.
 
 
-#### 3. ~~Skip Sites Retry links~~
+#### ~~Skip Sites Retry links~~
 
 ```
 https://produkter-lite-lwvz7mjmrq-uc.a.run.app/set_produkt?q=AMEREX+B570+fire+extinguisher
@@ -98,20 +138,7 @@ at ._make_request ( /usr/local/lib/python3.10/site-packages/urllib3/connectionpo
 at .urlopen ( /usr/local/lib/python3.10/site-packages/urllib3/connectionpool.py:790 )
 ```
 
-#### 4. Control for NoneType responses
 
-```
-TypeError: 'NoneType' object is not iterable
-
-https://produkter-lite-lwvz7mjmrq-uc.a.run.app/set_produkt?q=ALLIED+TUBE+%26+CONDUIT+6103-24-00+conduit
-
-at .get_dictionary_dict ( /produkter/src/classes/EngineSearchDictionary.py:99 )
-at .__init__ ( /produkter/src/classes/EngineSearchDictionary.py:70 )
-at .set_produkt ( /produkter/src/app_lite.py:38 )
-at .wrapped_function ( /usr/local/lib/python3.10/site-packages/flask_cors/extension.py:176 )
-```
-
-#### 5. Add configurable cse parameters (excludes/includes)
 
 ## SearchEngine
 

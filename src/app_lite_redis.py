@@ -113,11 +113,7 @@ def get_rkey_value_from_redis_cache_else_compute(q, rkey):
 
 @app.route('/')
 def home():
-    # Get the URL path of the deployed app
-    deployed_url = request.url_root
-
-    return render_template('home.html', deployed_url=deployed_url)
-
+    return
 
 #   ____  _____    _    ____   ____ _   _ 
 #  / ___|| ____|  / \  |  _ \ / ___| | | |
@@ -142,16 +138,6 @@ def get_search_results():
     else:
         return jsonify({"error": f"no results for ?q={q}"})
 
-
-@app.route('/search_results', methods=['GET'], endpoint='search_results_endpoint')
-def show_search_results():
-    # Get the JSON response from the API endpoint
-    json_response = get_search_results().get_json()
-
-    # Render the search_results.html template with the JSON response
-    return render_template('search_results.html', json_response=json_response)
-
-
 #   ____  _____ ____   ___  _   _ ____   ____ _____ ____  
 #  |  _ \| ____/ ___| / _ \| | | |  _ \ / ___| ____/ ___| 
 #  | |_) |  _| \___ \| | | | | | | |_) | |   |  _| \___ \ 
@@ -171,17 +157,6 @@ def get_resources_results():
         return jsonify({f"{q}": rkey_value})
     else:
         return jsonify({"error": f"no results for ?q={q}"})
-
-
-# @api_v1_bp.route('/resources_results', methods=['GET'], endpoint='resources_results_endpoint')
-@app.route('/resources_results', methods=['GET'], endpoint='resources_results_endpoint')
-def show_resources_results():
-    # Get the JSON response from the API endpoint
-    json_response = get_resources_results().get_json()
-
-    # Render the search_results.html template with the JSON response
-    return render_template('pdfs_results.html', json_response=json_response)
-
 
 #   ____  _   _  ____  ____ _____ ____ _____ ___ ___  _   _ ____  
 #  / ___|| | | |/ ___|/ ___| ____/ ___|_   _|_ _/ _ \| \ | / ___| 
