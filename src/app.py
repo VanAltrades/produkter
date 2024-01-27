@@ -1,4 +1,4 @@
-from flask import Flask, Blueprint, request, jsonify, session, render_template, redirect, url_for
+from flask import Flask, Blueprint, request, jsonify, render_template, make_response
 import os
 import base64
 from flask_cors import CORS
@@ -79,29 +79,45 @@ def get_rkey_value_from_redis_cache_else_compute(q, rkey):
 
     # Compute the result based on the provided rkey
     if rkey == rkey_i_search_results:
-        i_engine = Engine(q)
-        i_search = SearchDictionary(i_engine)
-        rkey_value = i_search.__json__()['dictionary']  # dict
+        try:
+            i_engine = Engine(q)
+            i_search = SearchDictionary(i_engine)
+            rkey_value = i_search.__json__()['dictionary']  # dict
+        except:
+            rkey_value = None
 
     elif rkey == rkey_i_search_links:
-        i_engine = Engine(q)
-        i_search = SearchDictionary(i_engine)
-        rkey_value = i_search.__json__()['links']       # list
-    
+        try:
+            i_engine = Engine(q)
+            i_search = SearchDictionary(i_engine)
+            rkey_value = i_search.__json__()['links']       # list
+        except:
+            rkey_value = None
+
     elif rkey == rkey_i_search_pdfs:
-        i_engine_pdf = Engine(q, fileType="pdf")
-        i_search_pdf = SearchDictionary(i_engine_pdf)
-        rkey_value = i_search_pdf.__json__()['links']   # list
-    
+        try:
+            i_engine_pdf = Engine(q, fileType="pdf")
+            i_search_pdf = SearchDictionary(i_engine_pdf)
+            rkey_value = i_search_pdf.__json__()['links']   # list
+        except:
+            rkey_value = None
+
     elif rkey == rkey_i_suggestions:
-        i_suggestions = Suggestions(q)
-        rkey_value = i_suggestions.__json__()           # dict
+        try:
+            i_suggestions = Suggestions(q)
+            rkey_value = i_suggestions.__json__()           # dict
+
+        except:
+            rkey_value = None
 
     elif rkey == rkey_i_sites:
-        i_engine = Engine(q)
-        i_search = SearchDictionary(i_engine)           # TODO: use i_search_links if exist, else rerun i_search
-        i_sites = Sites(i_search)
-        rkey_value = i_sites.__json__()                 # dict
+        try:
+            i_engine = Engine(q)
+            i_search = SearchDictionary(i_engine)           # TODO: use i_search_links if exist, else rerun i_search
+            i_sites = Sites(i_search)
+            rkey_value = i_sites.__json__()                 # dict
+        except:
+            rkey_value = None
 
     else:
         return None
@@ -128,7 +144,8 @@ def get_search_results():
     q = request.args.get('q')
     set_q_value_in_cache(q)
 
-    rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_search_results)
+    # rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_search_results)
+    rkey_value, status_code = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_search_results)
 
     set_redis_cache_expiry(expiration_time_seconds=30)
 
