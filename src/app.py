@@ -8,7 +8,7 @@ import json
 from classes.EngineSearchDictionary import Engine, SearchDictionary
 from classes.Suggestions import Suggestions
 from classes.Sites import Sites
-from utils.formatting import format_search_dictionary
+from utils.formatting import format_search_dictionary, format_schemas_dictionary
 
 app = Flask(__name__)
 CORS(app)
@@ -144,15 +144,15 @@ def get_search_results():
     q = request.args.get('q')
     set_q_value_in_cache(q)
 
-    # rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_search_results)
-    rkey_value, status_code = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_search_results)
+    rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_search_results)
 
     set_redis_cache_expiry(expiration_time_seconds=30)
 
     if rkey_value is not None:
         
         results = format_search_dictionary(rkey_value, keep_none_values=False)
-        
+        # results = format_search_dictionary(rkey_value)
+
         return jsonify({f"{q}": results})
     else:
         return jsonify({"error": f"no results for ?q={q}"})
@@ -245,7 +245,8 @@ def get_schemas_results():
     set_redis_cache_expiry(expiration_time_seconds=30)
     
     if rkey_value is not None:
-        results = format_search_dictionary(rkey_value['schemas'], keep_none_values=False)
+        # results = format_search_dictionary(rkey_value['schemas'], keep_none_values=False)
+        results = format_schemas_dictionary(rkey_value['schemas'])
         return jsonify({f"{q}": results})
     else:
         return jsonify({"error": f"no results for ?q={q}"})
