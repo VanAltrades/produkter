@@ -37,33 +37,60 @@
             word-break: break-all; /* Handle long URLs */
         }
     </style>
+    <script>
+        // Function to update links with the search query
+        function updateLinks() {
+            var searchQuery = document.getElementById('search_query').value;
+            
+            // Update links for search_endpoint
+            document.getElementById('search_link').href = "{{ url_for('search_endpoint') }}?q=" + searchQuery;
+            document.getElementById('search_results_link').href = "{{ url_for('search_results_endpoint') }}?q=" + searchQuery;
+            document.getElementById('resources_link').href = "{{ url_for('resources_endpoint') }}?q=" + searchQuery;
+            document.getElementById('resources_results_link').href = "{{ url_for('resources_results_endpoint') }}?q=" + searchQuery;
+            document.getElementById('questions_link').href = "{{ url_for('questions_endpoint') }}?q=" + searchQuery;
+            document.getElementById('comparisons_link').href = "{{ url_for('comparisons_endpoint') }}?q=" + searchQuery;
+            document.getElementById('suggestions_link').href = "{{ url_for('suggestions_endpoint') }}?q=" + searchQuery;
+            document.getElementById('schemas_link').href = "{{ url_for('schemas_endpoint') }}?q=" + searchQuery;
+            document.getElementById('texts_link').href = "{{ url_for('texts_endpoint') }}?q=" + searchQuery;
+        }
+    </script>
 </head>
 <body>
     <h1>Welcome to the Produkter API</h1>
-    
-    <p><b>1.</b> The URL path of the deployed app: {{ deployed_url }}</p>
-    
-    <p><b>2.</b> To return product information about your intended item (<code>?q=</code>), follow the steps below.</p>
 
-    <p><b>2.a.</b> To set a product "?q" parameter, request the API like:</p>
-    <code>{{ deployed_url }}set_produkt?q={product brand}%20{product mpn}</code>
-    
-    <p><b>2.b.</b> Or set the product identifier query parameter here:</p>
-    <form action="{{ url_for('set_endpoint') }}" method="GET">
-        <label for="product_query">?q=</label>
-        <input type="text" id="product_query" name="q" placeholder="Enter product identifier">
-        <button type="submit">Set Produkt</button>
-    </form>
+    <!-- Input field for search query -->
+    <label for="search_query">Search:</label>
+    <input type="text" id="search_query" placeholder="Enter your product search query" oninput="updateLinks()">
+    <button onclick="updateLinks()">Input</button>
 
-    <p><b>3.</b> Then, once the product parameter has been set:</p>
-    <ul>
-        <li>navigate to <a href="{{ url_for('search_endpoint') }}">{{ deployed_url }}search</a> for structured product information JSON about the product.</li>
-        <li>navigate to <a href="{{ url_for('resources_endpoint') }}">{{ deployed_url }}resources</a> for document links JSON about the product.</li>
-        <li>navigate to <a href="{{ url_for('questions_endpoint') }}">{{ deployed_url }}questions</a> for popular question queries about the product.</li>
-        <li>navigate to <a href="{{ url_for('comparisons_endpoint') }}">{{ deployed_url }}comparisons</a> for popular comparison queries including the product.</li>
-        <li>navigate to <a href="{{ url_for('suggestions_endpoint') }}">{{ deployed_url }}suggestions</a> for popular queries about the product.</li>
-        <li>navigate to <a href="{{ url_for('schemas_endpoint') }}">{{ deployed_url }}schemas</a> for relevant schema associated with the product.</li>
-        <li>navigate to <a href="{{ url_for('texts_endpoint') }}">{{ deployed_url }}texts</a> for relevant text associated with the product.</li>
-    </ul>
+    <p><b>1.</b>For structured product information JSON about the product, navigate to:</p>
+    <code><a id="search_link" href="{{ url_for('search_endpoint') }}">search</a></code>
+    <br><br>
+    or explore a visual example of the response <a href="{{ url_for('search_results_endpoint') }}" id="search_results_link">
+        <button>here</button>
+    </a>
+
+    <p><b>2.</b>For product document links JSON about the product, navigate to:</p>
+        <code><a id="resources_link" href="{{ url_for('resources_endpoint') }}">resources</a></code>
+        <br><br>
+        or explore a visual example of the response <a href="{{ url_for('resources_results_endpoint') }}" id="resources_results_link">
+            <button>here</button>
+        </a>
+
+    <p><b>3.</b>For popular question queries about the product, navigate to:</p>
+        <code><a id="questions_link" href="{{ url_for('questions_endpoint') }}">questions</a></code>
+
+    <p><b>4.</b>For popular comparison queries including the product, navigate to:</p>
+        <code><a id="comparisons_link" href="{{ url_for('comparisons_endpoint') }}">comparisons</a></code>
+
+    <p><b>5.</b>For popular search queries about the product, navigate to:</p>
+        <code><a id="suggestions_link" href="{{ url_for('suggestions_endpoint') }}">suggestions</a></code>
+
+    <p><b>6.</b>For schemas associated with the product, navigate to:</p>
+        <code><a id="schemas_link" href="{{ url_for('schemas_endpoint') }}">schemas</a></code>
+
+    <p><b>7.</b>For texts associated with the product, navigate to:</p>
+        <code><a id="texts_link" href="{{ url_for('texts_endpoint') }}">texts</a></code>
+
 </body>
 </html>

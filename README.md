@@ -97,6 +97,8 @@ TypeError: 'NoneType' object is not iterable
 
 https://produkter-lite-lwvz7mjmrq-uc.a.run.app/set_produkt?q=ALLIED+TUBE+%26+CONDUIT+6103-24-00+conduit
 
+?q=cbdmd GUM-20 rr200 d9 91544
+
 at .get_dictionary_dict ( /produkter/src/classes/EngineSearchDictionary.py:99 )
 at .__init__ ( /produkter/src/classes/EngineSearchDictionary.py:70 )
 at .set_produkt ( /produkter/src/app_lite.py:38 )

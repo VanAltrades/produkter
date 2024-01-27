@@ -1,281 +1,283 @@
-from flask import Flask, Blueprint, request, jsonify, session, render_template
-import json
+from flask import Flask, Blueprint, request, jsonify, session, render_template, redirect, url_for
 import os
 import base64
+from flask_cors import CORS
+import redis
+import json
 
 from classes.EngineSearchDictionary import Engine, SearchDictionary
-from classes.Sites import Sites
-# from cls.LanguageProcessor import LanguageProcessor
 from classes.Suggestions import Suggestions
-from classes.Trends import Trends
-
+from classes.Sites import Sites
 from utils.formatting import format_search_dictionary
 
+app = Flask(__name__)
+CORS(app)
 
-def response_to_json(response):
-    json_object = json.dumps(response, indent=2)
-    return json_object
+# production redis_client
+# on local deployment start redis server by running `redis-server` from wsl
+redis_host = os.environ.get("REDISHOST", "localhost")
+redis_port = int(os.environ.get("REDISPORT", 6379))
+redis_client = redis.StrictRedis(host=redis_host, port=redis_port)
 
-app = Flask(__name__, template_folder='templates')
+app.secret_key = base64.b64encode(os.urandom(24)).decode('utf-8') # Set a secret key for the session
+# api_v1_bp = Blueprint('api_v1', __name__, url_prefix='/api/v0.1') # Define the base URL for the API version
 
-# Set a secret key for the session
-app.secret_key = base64.b64encode(os.urandom(24)).decode('utf-8')
-# Define the base URL for the API version
-api_v1_bp = Blueprint('api_v1', __name__, url_prefix='/api/v0.1')
+current_script_directory = os.path.dirname(os.path.abspath(__file__)) # Get the absolute path to the directory of the current script
+
+os.chdir(current_script_directory) # Change the working directory to the directory of the current script
+
+# redis keys defined. need these to identify what to return @ endpoints.
+rkey_i_search_results = "i_search_results"
+rkey_i_search_links = "i_search_links"
+rkey_i_search_pdfs = "i_search_pdfs"
+rkey_i_suggestions = "i_suggestions"
+rkey_i_sites = "i_sites"
+valid_rkeys = [rkey_i_search_results, rkey_i_search_links, rkey_i_search_pdfs, rkey_i_suggestions, rkey_i_sites]
+
+def set_redis_cache_expiry(expiration_time_seconds=30):
+    rkeys = redis_client.keys("*")
+    # Set expiration for each key
+    for key in rkeys:
+        redis_client.expire(key, expiration_time_seconds)
 
 
-# Get the absolute path to the directory of the current script
-current_script_directory = os.path.dirname(os.path.abspath(__file__))
+def set_q_value_in_cache(q):
+    '''
+    check if request's `q` value is the same as the `q` value in cache. 
+    if so, proceed.
+    if not, reset `q` value and delete all previous cached keys/values.
+    '''
+    cached_q_value = redis_client.get('q')
+    print(cached_q_value)
+    
+    if cached_q_value is None:
+        redis_client.set('q',q)
+        return    
+    
+    if q and q == cached_q_value.decode('utf-8'): # reusing `q` in cache
+        return
+    
+    else: # requested `q` is different from `q` in cache
+        redis_client.set('q', q)
+        for key in valid_rkeys:
+            redis_client.delete(key)
 
-# Change the working directory to the directory of the current script
-os.chdir(current_script_directory)
 
-#   ____  _____ _____ 
-#  / ___|| ____|_   _|
-#  \___ \|  _|   | |  
-#   ___) | |___  | |  
-#  |____/|_____| |_|  
-@api_v1_bp.route('/set_produkt', methods=['GET'], endpoint='set_endpoint')
-def set_produkt():
-    # Get the 'q' parameter from the query string
-    q = request.args.get('q')
+def get_rkey_value_from_redis_cache_else_compute(q, rkey):
+    '''
+    as long as `rkey`'s argument exists within the pre-defined `valid_rkeys`...
+    return the cached `rkey` value.
+    otherwise compute `rkey` and store it in cache. 
+    '''
+    if rkey not in valid_rkeys:
+        raise ValueError(f"Invalid value for 'rkey'. It must be one of {valid_rkeys}")
 
-    i_engine = Engine(q)
-    i_search = SearchDictionary(i_engine)
-    # i_trends = Trends(q)
+    cached_result = redis_client.get(rkey)
 
-    session['q'] = q
-    session['i_search'] = i_search.__json__()
+    if cached_result:
+        return json.loads(cached_result.decode('utf-8'))  # Parse the JSON string to a dictionary
 
-    return f'Data set successfully.<br><br>Produkt: {q}'
+    # Compute the result based on the provided rkey
+    if rkey == rkey_i_search_results:
+        i_engine = Engine(q)
+        i_search = SearchDictionary(i_engine)
+        rkey_value = i_search.__json__()['dictionary']  # dict
+
+    elif rkey == rkey_i_search_links:
+        i_engine = Engine(q)
+        i_search = SearchDictionary(i_engine)
+        rkey_value = i_search.__json__()['links']       # list
+    
+    elif rkey == rkey_i_search_pdfs:
+        i_engine_pdf = Engine(q, fileType="pdf")
+        i_search_pdf = SearchDictionary(i_engine_pdf)
+        rkey_value = i_search_pdf.__json__()['links']   # list
+    
+    elif rkey == rkey_i_suggestions:
+        i_suggestions = Suggestions(q)
+        rkey_value = i_suggestions.__json__()           # dict
+
+    elif rkey == rkey_i_sites:
+        i_engine = Engine(q)
+        i_search = SearchDictionary(i_engine)           # TODO: use i_search_links if exist, else rerun i_search
+        i_sites = Sites(i_search)
+        rkey_value = i_sites.__json__()                 # dict
+
+    else:
+        return None
+
+    # Store the rkey_value as a JSON string in the cache
+    redis_client.set(rkey, json.dumps(rkey_value))
+
+    return rkey_value
+
+
+@app.route('/')
+def home():
+    deployed_url = request.url_root
+    return render_template('home.html', deployed_url=deployed_url)
 
 #   ____  _____    _    ____   ____ _   _ 
 #  / ___|| ____|  / \  |  _ \ / ___| | | |
 #  \___ \|  _|   / _ \ | |_) | |   | |_| |
 #   ___) | |___ / ___ \|  _ <| |___|  _  |
 #  |____/|_____/_/   \_\_| \_\\____|_| |_|
-@api_v1_bp.route('/search', methods=['GET'], endpoint='search_endpoint')
+@app.route('/search', methods=['GET'], endpoint='search_endpoint')
+# @api_v1_bp.route('/search', methods=['GET'], endpoint='search_endpoint')
 def get_search_results():
-    i_search = session['i_search']
+    q = request.args.get('q')
+    set_q_value_in_cache(q)
 
-    if i_search is not None:
-        results = format_search_dictionary(i_search['dictionary'], keep_none_values=False)
-        return jsonify({f"{session['q']}": results})
+    rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_search_results)
+
+    set_redis_cache_expiry(expiration_time_seconds=30)
+
+    if rkey_value is not None:
+        
+        results = format_search_dictionary(rkey_value, keep_none_values=False)
+        
+        return jsonify({f"{q}": results})
     else:
-        return jsonify({"error": "Produkt not initiated. First run /set_produkt/<product id>."})
-
-
-@api_v1_bp.route('/search_results', methods=['GET'], endpoint='search_results_endpoint')
-def show_search_results():
-    # Get the JSON response from the API endpoint
-    json_response = get_search_results().get_json()
-
-    # Render the search_results.html template with the JSON response
-    return render_template('search_results.html', json_response=json_response)
-
-#   ____ ___ _____ _____ ____  
-#  / ___|_ _|_   _| ____/ ___| 
-#  \___ \| |  | | |  _| \___ \ 
-#   ___) | |  | | | |___ ___) |
-#  |____/___| |_| |_____|____/ 
-def get_sites_instance():
-    '''
-    get Sites instance from its existing session __json__() 
-    or make a new session instance of Sites
-    '''
-    # Get i_sites from session with a default value of None
-    i_sites = session.get('i_sites', None)
-    
-    # case where i_sites json already instantiated in session
-    if i_sites is not None:
-        return i_sites
-    # case where i_sites json not instantiated so try adding it to session
-    elif i_sites is None:
-        i_search = session['i_search']
-        i_sites = Sites(i_search)
-        try: # try to cache sites json
-            session['i_sites'] = i_sites.__json__() 
-            return i_sites.__json__()
-        except: # no memory so just return json from sites instance and accept long load
-            return i_sites.__json__()
-    else:
-        return "Product not initiated. First run /set_product/<product name>"
-
-
-@api_v1_bp.route('/schemas', methods=['GET'], endpoint='schema_endpoint')
-def get_schema_results():
-    i_sites = get_sites_instance()
-    
-    if isinstance(i_sites, str):
-        return jsonify({
-            "error":
-            i_sites
-            })
-    elif isinstance(i_sites, dict):
-        sites_schema_dict_formatted_wo_nones = format_search_dictionary(i_sites['schemas'], keep_none_values=False)
-        return jsonify({
-            f"{session.get('q')}":
-            sites_schema_dict_formatted_wo_nones
-            })
-    else:
-        return jsonify({"error":"Invalid response from /schemas."})
-
-
-@api_v1_bp.route('/texts', methods=['GET'], endpoint='text_endpoint')
-def get_text_results():
-    i_sites = get_sites_instance()
-    
-    if isinstance(i_sites, str):
-        return jsonify({"error":i_sites})
-    elif isinstance(i_sites, dict):
-        # sites_text_dict_formatted_wo_nones = format_search_dictionary(i_sites['texts'], keep_none_values=False)
-        return jsonify({f"{session.get('q')}":i_sites['texts']})
-    else:
-        return jsonify({"error":"Invalid response from /texts."}) 
-
-
-#   ____  _   _  ____  ____ _____ ____ _____ ___ ___  _   _ ____  
-#  / ___|| | | |/ ___|/ ___| ____/ ___|_   _|_ _/ _ \| \ | / ___| 
-#  \___ \| | | | |  _| |  _|  _| \___ \ | |  | | | | |  \| \___ \ 
-#   ___) | |_| | |_| | |_| | |___ ___) || |  | | |_| | |\  |___) |
-#  |____/ \___/ \____|\____|_____|____/ |_| |___\___/|_| \_|____/
-def get_suggestions_instance(q):
-    '''
-    get Suggestions instance from its existing session __json__() 
-    or make a new session instance of Suggestions
-    '''
-    q = session.get('q', None)
-    i_suggestions = session.get('i_suggestions', None)
-
-    # case where i_suggestions json already instantiated in session
-    if i_suggestions is not None:
-        return i_suggestions
-    # case where i_suggestions json not instantiated so try adding it to session
-    elif i_suggestions is None:
-        i_suggestions = Suggestions(q)
-        try: # try to cache sites json
-            session['i_suggestions'] = i_suggestions.__json__() 
-            return i_suggestions.__json__()
-        except: # no memory so just return json from sites instance and accept long load
-            return i_suggestions.__json__()
-
-    else:
-        return "Product not initiated. First run /set_product/<product id>"
-
-
-@api_v1_bp.route('/questions', methods=['GET'], endpoint='questions_endpoint')
-def get_questions():
-    q = session.get('q')
-    i_suggestions = get_suggestions_instance(q)
-
-    if isinstance(i_suggestions, str):
-        return jsonify({
-            "error":
-            i_suggestions
-            }) 
-    elif isinstance(i_suggestions, dict):        
-        return jsonify({
-            f"{session.get('q')}":
-            i_suggestions.get('questions',{})
-            }) 
-    else:
-        return jsonify({"error": "Invalid response from /questions."})
-
-
-@api_v1_bp.route('/comparisons', methods=['GET'], endpoint='comparisons_endpoint')
-def get_comparisons():
-    q = session.get('q')
-    i_suggestions = get_suggestions_instance(q)
-
-    if isinstance(i_suggestions, str):
-        return jsonify({
-            "error":
-            i_suggestions
-            }) 
-    elif isinstance(i_suggestions, dict):        
-        return jsonify({
-            f"{session.get('q')}":
-            i_suggestions.get('comparisons',{})
-            }) 
-    else:
-        return jsonify({"error": "Invalid response from /comparisons."})
-
-
-@api_v1_bp.route('/suggestions', methods=['GET'], endpoint='suggestions_endpoint')
-def get_suggestions():
-    q = session.get('q')
-    i_suggestions = get_suggestions_instance(q)
-
-    if isinstance(i_suggestions, str):
-        return jsonify({
-            "error":
-            i_suggestions
-            }) 
-    elif isinstance(i_suggestions, dict):        
-        return jsonify({
-            f"{session.get('q')}":
-            i_suggestions.get('suggestions',{})
-            }) 
-    else:
-        return jsonify({"error": "Invalid response from /suggestions."})
- 
-
-#   _____ ____  _____ _   _ ____  ____  
-#  |_   _|  _ \| ____| \ | |  _ \/ ___| 
-#    | | | |_) |  _| |  \| | | | \___ \ 
-#    | | |  _ <| |___| |\  | |_| |___) |
-#    |_| |_| \_\_____|_| \_|____/|____/ 
-@api_v1_bp.route('/interest', methods=['GET'], endpoint='interest_endpoint')
-def get_interest_results():
-    q = session.get('q')
-
-    i_trends = Trends(keyword=q)
-    i_trends.build_interest_payload()
-    interest_dictionary = i_trends.get_interest_trends()
-    interest_result = response_to_json(interest_dictionary)
-    return interest_result
-
-
-@api_v1_bp.route('/related', methods=['GET'], endpoint='related_endpoint')
-def get_related_results():
-    # TODO: call keyword_related_rising_dictionary or call if exists
-    q = session.get('q')
-
-    i_trends = Trends(keyword=q)
-    interest_dictionary = i_trends.get_keyword_related_keywords()
-    interest_result = response_to_json(interest_dictionary)
-    return interest_result
+        return jsonify({"error": f"no results for ?q={q}"})
 
 #   ____  _____ ____   ___  _   _ ____   ____ _____ ____  
 #  |  _ \| ____/ ___| / _ \| | | |  _ \ / ___| ____/ ___| 
 #  | |_) |  _| \___ \| | | | | | | |_) | |   |  _| \___ \ 
 #  |  _ <| |___ ___) | |_| | |_| |  _ <| |___| |___ ___) |
 #  |_| \_\_____|____/ \___/ \___/|_| \_\\____|_____|____/ 
-@api_v1_bp.route('/resources', methods=['GET'], endpoint='resources_endpoint')
+@app.route('/resources', methods=['GET'], endpoint='resources_endpoint')
+# @api_v1_bp.route('/resources', methods=['GET'], endpoint='resources_endpoint')
 def get_resources_results():
-    q = session['q']
-    i_engine_pdf = Engine(q, fileType="pdf")
-    i_search_pdf = SearchDictionary(i_engine_pdf)
+    q = request.args.get('q')
+    set_q_value_in_cache(q)
 
+    rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_search_pdfs)
 
-    if i_search_pdf is not None:
-        results = format_search_dictionary(i_search_pdf.dictionary, keep_none_values=False)
-        results_pdfs = results['link']
-        return jsonify({f"{session['q']}": results_pdfs})
+    set_redis_cache_expiry(expiration_time_seconds=30)
+
+    if rkey_value is not None:
+        return jsonify({f"{q}": rkey_value})
     else:
-        return jsonify({"error": "Produkt not initiated. First run /set_produkt/<product id>."})
+        return jsonify({"error": f"no results for ?q={q}"})
 
-@api_v1_bp.route('/resources_results', methods=['GET'], endpoint='resources_results_endpoint')
+#   ____  _   _  ____  ____ _____ ____ _____ ___ ___  _   _ ____  
+#  / ___|| | | |/ ___|/ ___| ____/ ___|_   _|_ _/ _ \| \ | / ___| 
+#  \___ \| | | | |  _| |  _|  _| \___ \ | |  | | | | |  \| \___ \ 
+#   ___) | |_| | |_| | |_| | |___ ___) || |  | | |_| | |\  |___) |
+#  |____/ \___/ \____|\____|_____|____/ |_| |___\___/|_| \_|____/
+@app.route('/questions', methods=['GET'], endpoint='questions_endpoint')
+def get_questions():
+    q = request.args.get('q')
+    set_q_value_in_cache(q)
+
+    rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_suggestions)
+
+    set_redis_cache_expiry(expiration_time_seconds=30)
+
+    if rkey_value is not None:
+        results = rkey_value.get('questions',{})
+        return jsonify({f"{q}": results})
+    else:
+        return jsonify({"error": f"no results for ?q={q}"})
+
+
+@app.route('/comparisons', methods=['GET'], endpoint='comparisons_endpoint')
+def get_comparisons():
+    q = request.args.get('q')
+    set_q_value_in_cache(q)
+
+    rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_suggestions)
+
+    set_redis_cache_expiry(expiration_time_seconds=30)
+
+    if rkey_value is not None:
+        results = rkey_value.get('comparisons',{})
+        return jsonify({f"{q}": results})
+    else:
+        return jsonify({"error": f"no results for ?q={q}"})
+
+
+@app.route('/suggestions', methods=['GET'], endpoint='suggestions_endpoint')
+def get_suggestions():
+    q = request.args.get('q')
+    set_q_value_in_cache(q)
+
+    rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_suggestions)
+
+    set_redis_cache_expiry(expiration_time_seconds=30)
+    
+    if rkey_value is not None:
+        results = rkey_value.get('suggestions',{})
+        return jsonify({f"{q}": results})
+    else:
+        return jsonify({"error": f"no results for ?q={q}"})
+
+
+#   ____ ___ _____ _____ ____  
+#  / ___|_ _|_   _| ____/ ___| 
+#  \___ \| |  | | |  _| \___ \ 
+#   ___) | |  | | | |___ ___) |
+#  |____/___| |_| |_____|____/
+@app.route('/schemas', methods=['GET'], endpoint='schemas_endpoint')
+def get_schemas_results():
+    q = request.args.get('q')
+    set_q_value_in_cache(q)
+
+    rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_sites)
+
+    set_redis_cache_expiry(expiration_time_seconds=30)
+    
+    if rkey_value is not None:
+        results = format_search_dictionary(rkey_value['schemas'], keep_none_values=False)
+        return jsonify({f"{q}": results})
+    else:
+        return jsonify({"error": f"no results for ?q={q}"})
+
+
+@app.route('/texts', methods=['GET'], endpoint='texts_endpoint')
+def get_texts_results():
+    q = request.args.get('q')
+    set_q_value_in_cache(q)
+
+    rkey_value = get_rkey_value_from_redis_cache_else_compute(q, rkey_i_sites)
+
+    set_redis_cache_expiry(expiration_time_seconds=30)
+    
+    if rkey_value is not None:
+        results = rkey_value['texts']
+        return jsonify({f"{q}": results})
+    else:
+        return jsonify({"error": f"no results for ?q={q}"})
+
+
+########  ######## ##     ##  #######   ######  
+##     ## ##       ###   ### ##     ## ##    ## 
+##     ## ##       #### #### ##     ## ##       
+##     ## ######   ## ### ## ##     ##  ######  
+##     ## ##       ##     ## ##     ##       ## 
+##     ## ##       ##     ## ##     ## ##    ## 
+########  ######## ##     ##  #######   ######  
+@app.route('/search_results', methods=['GET'], endpoint='search_results_endpoint')
+def show_search_results():
+    # Get the JSON response from the API endpoint
+    json_response = get_search_results()
+
+    # Render the search_results.html template with the JSON response
+    return render_template('search_results.html', json_response=json_response)
+
+
+@app.route('/resources_results', methods=['GET'], endpoint='resources_results_endpoint')
 def show_resources_results():
     # Get the JSON response from the API endpoint
-    json_response = get_resources_results().get_json()
+    json_response = get_resources_results()
 
     # Render the search_results.html template with the JSON response
     return render_template('pdfs_results.html', json_response=json_response)
 
 
 # Register the blueprint with the Flask app
-app.register_blueprint(api_v1_bp)
+# app.register_blueprint(api_v1_bp)
 
+port = int(os.environ.get('PORT', 5000))
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=port)

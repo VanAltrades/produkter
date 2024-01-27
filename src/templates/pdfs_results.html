@@ -41,10 +41,12 @@
 </head>
 <body>
     <div class="container">
-        {% if session['q'] %}
-            <h1>{{ session['q'] }}</h1>
+        {% if json_response and json_response.is_json %}
+            {% set data = json_response.get_json() %}
+            {% for key, values in data.items() %}
+                {% set dynamic_key = key %}
+                <h1>{{ dynamic_key }}</h1>
 
-            {% for key, values in json_response.items() %}
                 <ul>
                     {% for value in values %}
                         <li class="iframe-container">

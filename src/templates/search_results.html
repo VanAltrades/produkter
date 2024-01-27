@@ -41,22 +41,26 @@
 </head>
 <body>
     <div class="container">
-        {% if session['q'] %}
-            <h1>{{ session['q'] }}</h1>
+        {% if json_response and json_response.is_json %}
+            {% set data = json_response.get_json() %}
+            {% for key, values in data.items() %}
+                {% set dynamic_key = key %}
+                <h1>{{ dynamic_key }}</h1>
 
-            {% for key, values in json_response[session['q']].items() %}
-                <h2>{{ key }}</h2>
-                <ul>
-                    {% for value in values %}
-                        {% if "image" in key.lower() %}
-                            <li class="image-container"><img src="{{ value }}" alt="{{ key }}"></li>
-                        {% elif "link" in key.lower() or "site" in key.lower() %}
-                            <li><a href="{{ value }}" target="_blank">{{ value }}</a></li>
-                        {% else %}
-                            <li>{{ value }}</li>
-                        {% endif %}
-                    {% endfor %}
-                </ul>
+                {% for sub_key, sub_values in values.items() %}
+                    <h2>{{ sub_key }}</h2>
+                    <ul>
+                        {% for value in sub_values %}
+                            {% if "image" in sub_key.lower() %}
+                                <li class="image-container"><img src="{{ value }}" alt="{{ sub_key }}"></li>
+                            {% elif "link" in sub_key.lower() or "site" in sub_key.lower() %}
+                                <li><a href="{{ value }}" target="_blank">{{ value }}</a></li>
+                            {% else %}
+                                <li>{{ value }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                {% endfor %}
             {% endfor %}
         {% else %}
             <p>No search results available.</p>

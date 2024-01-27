@@ -1,5 +1,35 @@
 # Produkter Lite
 
+## Deployment Checklist
+
+.py checklist
+
+* debug=False
+
+.sh checklist
+
+* image name is correct?
+* service name is correct?
+* memorystore memory size is correct?
+* --set-env-vars set correctly from .env file?
+
+.env checklist
+
+* applicable environment variables called from .sh exist in .env?
+
+Dockerfile checklist
+
+* app file in /src is named accurately based on what you want deployed?
+
+```[app:app, app_lite_redis:app, app_rapidapi:app, ...]```
+
+.dockerignore checklist
+
+* secret files under /config ignored?
+* /docs ignores?
+* unused /templates ignored?
+* any other bloated /dirs or files ignored?
+
 ## Configure Compute Engine Service Account for Cloud Run
 ```
 XXXX-compute@developer.gserviceaccount.com
