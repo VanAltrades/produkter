@@ -1,6 +1,5 @@
 <!-- Dockerfile -->
 /docs
-/tests
 /todo
 /app_versions
 __pycache__/

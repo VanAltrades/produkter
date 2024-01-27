@@ -38,4 +38,5 @@ EXPOSE $PORT
 # app-lite deployment
 # CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app_lite:app
 # CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app_rapidapi:app
-CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app_lite_redis:app
+# CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app_lite_redis:app
+CMD exec gunicorn --bind :$PORT --workers 1 --threads 8 --timeout 0 app:app

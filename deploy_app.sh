@@ -14,8 +14,6 @@ SERVICE_NAME=produkter-api
 
 MEMORYSIZE=1
 
-# NETWORK="projects/produkter-406316/global/networks/redis-vpc-network"
-
 # Load environment variables from .env file
 if [ -f .env ]; then
   export $(cat .env | grep -v '#' | xargs)
