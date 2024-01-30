@@ -5,5 +5,5 @@ gcloud run services delete produkter-api --region us-central1
 
 # Delete Redis
 ```
-$ gcloud beta run integrations delete redis-1
+gcloud beta run integrations delete redis-1
 ```

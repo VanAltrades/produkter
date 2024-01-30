@@ -38,8 +38,9 @@ class Sites:
         headers = {'User-Agent': self.ua.random}
 
         try:
+            response = requests.get(url, headers=headers)
             # Send a GET request to the URL with SSL verification disabled
-            response = requests.get(url, headers=headers, verify=False)
+            # response = requests.get(url, headers=headers, verify=False)
 
             # Check if the request was successful (status code 200)
             if response.status_code == 200:
@@ -232,12 +233,28 @@ class Sites:
 
             return i, schema
 
-        with ThreadPoolExecutor() as executor:
+        # with ThreadPoolExecutor() as executor:
+        #     # Use executor.map to parallelize the processing of links
+        #     futures = [executor.submit(process_link, i, link) for i, link in enumerate(self.links)]
+
+        #     # Wait for all tasks to complete and collect results
+        #     for future in concurrent.futures.as_completed(futures):
+        #         i, schema = future.result()
+        #         schemas[i] = schema
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
             # Use executor.map to parallelize the processing of links
             futures = [executor.submit(process_link, i, link) for i, link in enumerate(self.links)]
 
-            # Wait for all tasks to complete and collect results
-            for future in concurrent.futures.as_completed(futures):
+            # Wait for all tasks to complete and collect results with a timeout
+            try:
+                done, not_done = concurrent.futures.wait(futures, timeout=15, return_when=concurrent.futures.ALL_COMPLETED)
+            except concurrent.futures.TimeoutError:
+                # Handle the case where the timeout is reached
+                print("Timeout reached. Not all tasks completed.")
+
+            # Collect results from completed tasks
+            for future in done:
                 i, schema = future.result()
                 schemas[i] = schema
 
@@ -257,14 +274,28 @@ class Sites:
                 text = text.replace("\t", " ")
             return i, text
 
-        with ThreadPoolExecutor() as executor:
+        # with ThreadPoolExecutor() as executor:
+        #     # Use executor.map to parallelize the processing of links
+        #     futures = [executor.submit(process_link, i, link) for i, link in enumerate(self.links)]
+
+        #     # Wait for all tasks to complete and collect results
+        #     for future in concurrent.futures.as_completed(futures):
+        #         i, text = future.result()
+        #         texts[i] = text
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
             # Use executor.map to parallelize the processing of links
             futures = [executor.submit(process_link, i, link) for i, link in enumerate(self.links)]
 
-            # Wait for all tasks to complete and collect results
-            for future in concurrent.futures.as_completed(futures):
-                i, text = future.result()
-                texts[i] = text
+            # Wait for all tasks to complete and collect results with a timeout
+            try:
+                for future in concurrent.futures.as_completed(futures, timeout=15):
+                    i, text = future.result()
+                    texts[i] = text
+            except concurrent.futures.TimeoutError:
+                # Handle the case where the timeout is reached
+                print("Timeout reached. Not all tasks completed.")
+
 
         return texts
     

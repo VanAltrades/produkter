@@ -1,4 +1,4 @@
-1. Previous Redis Integrations Causing Deployment to Fail
+## 1. Previous Redis Integrations Causing Deployment to Fail
 
 When running:
 ```
@@ -42,19 +42,72 @@ $ gcloud beta run integrations delete redis-2
 
 Then I re-run integration (final .sh command)
 
-2. Requests immediately timeout
+## 2. Requests immediately timeout
 
 ```
 textPayload: "The request has been terminated because it has reached the maximum request timeout. To change this limit, see https://cloud.google.com/run/docs/configuring/request-timeout"
 ```
 
-3. Insecure connection
+## 3. Schemas/Texts from Sites hang infinitely
+
+```
+Failed to retrieve the page:
+https://www.amazon.com/DOGIPOT-1402-30-Roll-Litter-Rolls/dp/B010VBMLKO. 
+
+I tried to ommit those hanging urls (implemented in Sites)
+It is designed to only return urls that loaded after 15 seconds
+This did not work.
+            try:
+                for future in concurrent.futures.as_completed(futures, timeout=15):
+                    i, text = future.result()
+                    texts[i] = text
+            except concurrent.futures.TimeoutError:
+                # Handle the case where the timeout is reached
+                print("Timeout reached. Not all tasks completed.")
+
+```
+
+3. ~~Insecure connection~~
 
 ```
 https://produkter-api-lwvz7mjmrq-uc.a.run.app/schemas?q=DOGIPOT%201402-30%20bags
 
+?q=DOGIPOT 1402-30 bags
+
 /usr/local/lib/python3.10/site-packages/urllib3/connectionpool.py:1099: InsecureRequestWarning: Unverified HTTPS request is being made to host 'www.walmart.com'. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#tls-warnings
 
+
+response = requests.get(url, headers=headers, verify=False)
+^ this was sending a GET request to the URL with SSL verification disabled
+it caused the warning so i did this for a solution:
+response = requests.get(url, headers=headers)
+
+However that ?q still hung infinitely. 
+This is likely caused by one site hanging the parallelized scrapes.
+To revert, I updated the concurrent requests to only return completed sites after 15 secs.
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            # Use executor.map to parallelize the processing of links
+            futures = [executor.submit(process_link, i, link) for i, link in enumerate(self.links)]
+
+            # Wait for all tasks to complete and collect results with a timeout
+            try:
+                done, not_done = concurrent.futures.wait(futures, timeout=15, return_when=concurrent.futures.ALL_COMPLETED)
+            except concurrent.futures.TimeoutError:
+                # Handle the case where the timeout is reached
+                print("Timeout reached. Not all tasks completed.")
+
+            # Collect results from completed tasks
+            for future in done:
+                i, schema = future.result()
+                schemas[i] = schema
+
+        return schemas
 ```
 
-4. ValueError: invalid literal for int() with base 10: ''
+4. ~~ValueError: invalid literal for int() with base 10: ''~~
+
+```
+I mislabeled REDISHOST and REDISPORT as REDIS_HOST and REDIS_PORT in my deployment script env vars.
+
+I had to delete the cloud run/redis services and redeployed them with correct naming.
+```

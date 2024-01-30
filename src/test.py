@@ -18,6 +18,7 @@ q = "AMEREX B570 fire extinguisher"     # [fixed] SSL Error from logs
 q = "MILLER ELECTRIC 301568 mig cable"  # [fixed] SSL Error from logs
 q = "ALLIED TUBE & CONDUIT 6103-24-00 conduit"  # TypeError: 'NoneType' object is not iterable (get_dictionary_dict)
 q = "cbdmd GUM-20 rr200 d9 91544"       # NoneType from SearchEngine
+q = "DOGIPOT 1402-30 bags"              # hangs infinitely
 q = "milwaukee m18 fuel"
 q = "AMD Ryzen 9 5900X"
 q = "Huy Fong HFSR3G"

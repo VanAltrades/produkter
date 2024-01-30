@@ -4,17 +4,15 @@
 # be sure to update dockerfile to correct file first
 
 # Set your project ID
-PROJECT_ID=produkter-406316
+# PROJECT_ID=produkter-406316
 
-# SERVICE_ACCOUNT_NAME=produkter_api_sa
+# # Set your image name
+# IMAGE_NAME=produkter-image
 
-# Set your image name
-IMAGE_NAME=produkter-image
+# # Set your desired service name
+# SERVICE_NAME=produkter-api
 
-# Set your desired service name
-SERVICE_NAME=produkter-api
-
-MEMORYSIZE=1
+# MEMORYSIZE=1
 
 # Load environment variables from .env file
 if [ -f .env ]; then
@@ -26,6 +24,10 @@ fi
 
 # gcloud iam service-accounts create SERVICE_ACCOUNT_NAME --display-name "Produkter API Service Account"
 # gcloud projects add-iam-policy-binding PROJECT_ID --member=serviceAccount:SERVICE_ACCOUNT_NAME@PROJECT_ID.iam.gserviceaccount.com --role=roles/run.admin
+
+# delete existing to avoid errors if applicable
+gcloud run services delete produkter-api --region us-central1
+gcloud beta run integrations delete redis-1
 
 # Build and push the Docker image to Container Registry
 gcloud builds submit --tag gcr.io/$PROJECT_ID/$IMAGE_NAME  --project=$PROJECT_ID
@@ -44,10 +46,10 @@ gcloud run deploy $SERVICE_NAME \
 # Done.
 
 # Create the Redis integration for Cloud Run (only need to deploy this once):
-# gcloud beta run integrations create \
-# --type=redis \
-# --service=$SERVICE_NAME \
-# --region $REGION
+gcloud beta run integrations create \
+--type=redis \
+--service=$SERVICE_NAME \
+--region $REGION
 
 # --parameters=memory-size-gb=$MEMORYSIZE # this parameter seems to have been sunset
 # \  Creating new Integration... Deployment started. This process will continue even if your terminal session is interrupted.
