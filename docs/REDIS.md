@@ -41,6 +41,11 @@ PONG
 
 ## [Create private service access VPC](https://cloud.google.com/vpc/docs/configure-private-services-access#modifying-connection)
 
+Without private service access VPC, you may hit:
+```
+textPayload: "The request has been terminated because it has reached the maximum request timeout. To change this limit, see https://cloud.google.com/run/docs/configuring/request-timeout"
+```
+
 Redis Instances in MemoryStore require private IP address space via VPC.
 
 Save private ip for later --ranges
@@ -51,7 +56,7 @@ Save private ip for later --ranges
 $ gcloud services vpc-peerings update \
     --service=servicenetworking.googleapis.com \
     --ranges=10.128.0.0/20 \
-    --network=redis-vpc-network \
+    --network=produkter-api-vpc-network \
     --project=produkter-406316 \
     --force
 ```
@@ -92,6 +97,8 @@ for you.
 ```
 
 You can check the status using `gcloud beta run integrations describe`
+
+
 
 # Did not work methods
 

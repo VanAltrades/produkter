@@ -98,5 +98,5 @@ docker run -p 5000:5000 -e PORT=5000 produkter-lite
 
 ## Deploy from gcloud SDK
 ```
-gclout init
+gcloud init
 ```

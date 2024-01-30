@@ -16,7 +16,7 @@ CORS(app)
 # production redis_client
 # on local deployment start redis server by running `redis-server` from wsl
 redis_host = os.environ.get("REDISHOST", "localhost")
-redis_port = int(os.environ.get("REDISPORT", 6379))
+redis_port = int(os.environ.get("REDISPORT", "6379"))
 redis_client = redis.StrictRedis(host=redis_host, port=redis_port)
 
 app.secret_key = base64.b64encode(os.urandom(24)).decode('utf-8') # Set a secret key for the session

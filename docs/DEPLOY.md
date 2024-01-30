@@ -32,12 +32,18 @@ Dockerfile checklist
 
 ## Configure Compute Engine Service Account for Cloud Run
 ```
+You need need a default compute service account 
+
+Roles:
+editor 
+Service Account token creator
+
 XXXX-compute@developer.gserviceaccount.com
 
 Grant Service Account Token Creator. This role allows the service account to create short-lived credentials.
 roles/iam.serviceAccountTokenCreator
 
-
+allow admin email owner access to new service account to run gcloud
 ```
 
 make sure `debug=False` for deployment
@@ -63,7 +69,36 @@ gcloud run deploy --image gcr.io/ProjectID/produkter-lite --platform managed  --
 gcloud run deploy --image gcr.io/produkter-406316/produkter-lite --platform managed  --project=produkter-406316 --allow-unauthenticated
 ```
 
-## Set Environment Variables Once Deployed
+# What is Created?
+
+## Service Account
+
+* compute@sa - needs to exist with
+```
+**Roles:**
+Editor 
+Service Account token creator
+
+```
+
+## VPC
+
+* uses default
+
+* network peer added: default-redis-e619463a-57d4-4053-a70d-b8c275ad4d49
+
+* serverless vpc added: runapps-default-default
+
+## Cloud Run
+
+* cloud run service created
+
+## Memorystore
+
+* redis instance created
+
+
+## Set Environment Variables Once Deployed if not defined
 ```
 > Edit & Deploy New Revision
 > Variables & Secrets
