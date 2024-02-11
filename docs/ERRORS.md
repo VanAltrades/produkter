@@ -1,4 +1,45 @@
-## 1. Previous Redis Integrations Causing Deployment to Fail
+## 2. Requests immediately timeout
+
+```
+textPayload: "The request has been terminated because it has reached the maximum request timeout. To change this limit, see https://cloud.google.com/run/docs/configuring/request-timeout"
+```
+
+## 3. Schemas/Texts from Sites hang infinitely
+
+```
+Failed to retrieve the page:
+https://www.amazon.com/DOGIPOT-1402-30-Roll-Litter-Rolls/dp/B010VBMLKO. 
+
+I tried to ommit those hanging urls (implemented in Sites)
+It is designed to only return urls that loaded after 15 seconds
+This did not work.
+            try:
+                for future in concurrent.futures.as_completed(futures, timeout=15):
+                    i, text = future.result()
+                    texts[i] = text
+            except concurrent.futures.TimeoutError:
+                # Handle the case where the timeout is reached
+                print("Timeout reached. Not all tasks completed.")
+```
+
+SEEMS TO WORK LOCALLY BUT NOT IN CLOUD
+
+```
+503
+{
+"q":"CHECKPOINT CPY24MM"
+}
+{
+"q":"COXREELS 117WT-1-200"
+}
+
+504
+{
+"q":"ILC KINGPIN EZGO / CUSHMAN / TEXTRON"
+}
+```
+
+~~1. Previous Redis Integrations Causing Deployment to Fail~~
 
 When running:
 ```
@@ -41,31 +82,6 @@ $ gcloud beta run integrations delete redis-2
 ```
 
 Then I re-run integration (final .sh command)
-
-## 2. Requests immediately timeout
-
-```
-textPayload: "The request has been terminated because it has reached the maximum request timeout. To change this limit, see https://cloud.google.com/run/docs/configuring/request-timeout"
-```
-
-## 3. Schemas/Texts from Sites hang infinitely
-
-```
-Failed to retrieve the page:
-https://www.amazon.com/DOGIPOT-1402-30-Roll-Litter-Rolls/dp/B010VBMLKO. 
-
-I tried to ommit those hanging urls (implemented in Sites)
-It is designed to only return urls that loaded after 15 seconds
-This did not work.
-            try:
-                for future in concurrent.futures.as_completed(futures, timeout=15):
-                    i, text = future.result()
-                    texts[i] = text
-            except concurrent.futures.TimeoutError:
-                # Handle the case where the timeout is reached
-                print("Timeout reached. Not all tasks completed.")
-
-```
 
 3. ~~Insecure connection~~
 
@@ -111,3 +127,7 @@ I mislabeled REDISHOST and REDISPORT as REDIS_HOST and REDIS_PORT in my deployme
 
 I had to delete the cloud run/redis services and redeployed them with correct naming.
 ```
+
+5. ~~Memory limit of 1024 MiB exceeded with 1099 MiB used. Consider increasing the memory limit, see https://cloud.google.com/run/docs/configuring/memory-limits~~ 
+
+```gcloud run services update SERVICE_NAME --memory=1Gi```

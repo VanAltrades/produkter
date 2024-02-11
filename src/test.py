@@ -146,7 +146,7 @@ r.get("i_search_results")
 r.get("i_search_links")
 
 # Set an expiration time of 1 hour (3600 seconds) for the key
-r.expire(q_key, 3600)
+# r.expire(q_key, 3600)
 
 
 # session['q'] = q
