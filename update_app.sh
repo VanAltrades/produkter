@@ -30,6 +30,6 @@ gcloud run deploy $SERVICE_NAME \
   --image gcr.io/$PROJECT_ID/$IMAGE_NAME \
   --platform managed \
   --allow-unauthenticated \
-  --memory=1Gi \
+  --memory=2Gi \
   --region $REGION \
   --set-env-vars CS_KEY=$CS_KEY,REDISHOST=$REDISHOST,REDISPORT=$REDISPORT

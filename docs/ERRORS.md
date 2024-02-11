@@ -130,4 +130,4 @@ I had to delete the cloud run/redis services and redeployed them with correct na
 
 5. ~~Memory limit of 1024 MiB exceeded with 1099 MiB used. Consider increasing the memory limit, see https://cloud.google.com/run/docs/configuring/memory-limits~~ 
 
-```gcloud run services update SERVICE_NAME --memory=1Gi```
+```gcloud run services update SERVICE_NAME --memory=2Gi```

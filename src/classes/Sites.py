@@ -248,7 +248,7 @@ class Sites:
 
             # Wait for all tasks to complete and collect results with a timeout
             try:
-                done, not_done = concurrent.futures.wait(futures, timeout=15, return_when=concurrent.futures.ALL_COMPLETED)
+                done, not_done = concurrent.futures.wait(futures, timeout=59, return_when=concurrent.futures.ALL_COMPLETED)
             except concurrent.futures.TimeoutError:
                 # Handle the case where the timeout is reached
                 print("Timeout reached. Not all tasks completed.")
@@ -289,7 +289,7 @@ class Sites:
 
             # Wait for all tasks to complete and collect results with a timeout
             try:
-                for future in concurrent.futures.as_completed(futures, timeout=15):
+                for future in concurrent.futures.as_completed(futures, timeout=59):
                     i, text = future.result()
                     texts[i] = text
             except concurrent.futures.TimeoutError:
