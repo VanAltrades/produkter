@@ -4,7 +4,7 @@
 # be sure to update dockerfile to correct file first
 
 # Set your project ID
-# PROJECT_ID=produkter-406316
+# PROJECT_ID=produkter-id
 
 # # Set your image name
 # IMAGE_NAME=produkter-image

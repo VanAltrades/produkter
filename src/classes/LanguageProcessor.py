@@ -104,25 +104,3 @@ class LanguageProcessor:
         return attributes
     
     # extract_attributes(corpus = "The product has a red color, large size, and costs $20.")
-
-
-
-# # Example usage with a list of keyword phrases
-# text_corpus = """Browse our exclusive collection of auto accessories that includes top quality products to enhance the style, comfort and functionality of your vehicle. We provide one stop shop for the perfect auto accessories for the vehicle.
-# Features
-# RV Siding Mesa
-# High quality construction and durability
-# Variety of styles for every type of accessory
-# 4 Piece
-# Specifications
-# Design: Mesa
-# Length: 16 in.
-# Width: 96 in.
-# Color: Polar White
-# Material: Aluminum"""
-# keyword_phrases = ["example keyword", "another phrase"]
-# confidence_scores = calculate_confidence_for_phrases(text_corpus, keyword_phrases)
-
-# # Print confidence scores for each keyword phrase
-# for phrase, score in confidence_scores.items():
-#     print(f"Confidence score for '{phrase}': {score}")

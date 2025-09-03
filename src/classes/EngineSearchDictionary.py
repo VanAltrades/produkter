@@ -130,13 +130,11 @@ class SearchDictionary:
         return dictionary
 
 
+if __name__ == "__main__":
+    # engine_instance = Engine("milwaukee m18 fuel")
+    engine_instance = Engine("AMD Ryzen 9 5900X")
 
-# # Example usage:
-# engine_instance = Engine("milwaukee m18 fuel")
-# engine_instance = Engine("AMD Ryzen 9 5900X")
-
-# # Create an instance of Rank and automatically pass the results
-# rank_instance = SearchDictionary(engine_instance)
-
-# # Now you can access rank_instance.results
-# print(rank_instance.results)
+    # Create an instance of Rank and automatically pass the results
+    rank_instance = SearchDictionary(engine_instance)
+    
+    print(rank_instance.results)

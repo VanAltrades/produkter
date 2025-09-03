@@ -3,4 +3,6 @@ dukt_sa.json
 cs_key.json
 app_secrets.py
 .env
+.csv
 __pycache__/
+/todo

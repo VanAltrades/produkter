@@ -13,28 +13,6 @@ class Suggestions:
         # self.keyword_list = language_processor_instance.items
         self.keyword_list = [q] #TODO: then add language_processor_instance.items if not null
 
-        # self.questions = self.get_questions()
-        # self.comparisons = self.get_comparisons()
-        # self.suggestions = self.get_suggestions()
-
-        # get dictionaries from existing instance json, otherwise run request
-        # try: # from __json__()
-        #     print("got questions dict from the existing instance's json")
-        #     self.questions = self['questions']
-        # except: 
-        #     print("got questions dict from running get_questions()")
-        #     self.questions = self.get_questions()
-        # try: # from __json__()
-        #     print("got comparisons dict from the existing instance's json")
-        #     self.comparisons = self['comparisons']
-        # except: 
-        #     print("got comparisons dict from running get_comparisons()")
-        #     self.comparisons = self.get_comparisons()
-        # try: # from __json__()
-        #     self.suggestions = self['suggestions']
-        # except: 
-        #     self.suggestions = self.get_suggestions()
-
 
     def __json__(self):
         return {

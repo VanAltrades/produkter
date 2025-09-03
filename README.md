@@ -1,50 +1,64 @@
-# PRODUKTER
+# THE PRODUKTER API
 
-## Overview
+![Produkter API Logo](docs/imgs/introducing_produkter.png)
 
-Produkter API allows developers to access product information in a structured JSON format.
+## [Produkter hosted via RapidAPI](https://rapidapi.com/vanaltrades/api/produkter) is currently depreciated due to cost.
 
-Examples include:
+To test out the Produkter API, please build locally or reach out with serverless deployment questions via Github.
 
-1. `/search`
+![Produkter API Demo using RapidAPI](docs/imgs/rapidapi_demo.png)
 
-* Return the most relevant titles, descriptions, images, and more from search results.
+## What can Produkter accomplish for you?
 
-2. `/resources`
+Enterprise businesses, sellers, developers, and ecommerce entrepreneurs require high quality product information to list and rank products online.
 
-* Return the most relevant PDF resources associated with a product.
+High quality content [1] improves rank on search engines and [2] provides a quality product experience that satiates buyers' expectations which leads to conversions.
 
-3. `/schemas`
+Produkter allows developers to input a product identifying query and return JSON from multiple endpoints with valuable structured product information related to the input product.
 
-* Return product schema (if it exists) ranging from price to gtins to reviews associated with a product. 
+The structured product information (and the api's goal) is designed to allow users to supercharge their merchandising operations.
 
-4. `/texts`
+Use this API to...
 
-* Return text from relevant websites featuring a given product.
+* supercharge your large language model for product content.
+* collect multimedia assets for your store like image files and pdfs.
+* fill in important product schema in your feed like mpns, gtins and brands.
+* schedule price comparisons against top product results.
+* collect user-generated product reviews to include on your pages.
+* extract important product attributes for your target product and load them into your systems.
+* understand what titles, descriptions and text top competitors are using to outperform the market.
+* identify high demand search queries and questions about your product to highlight search engine optimization content opportunities.
 
-5. `/suggestions`
+## How does Produkter work?
 
-* Return relevant user search queries associated with a product.
+Produkter requires a product query to be defined at each of its endpoints (?q={}).
 
-6. `/questions`
+Developers can return product information by requesting one of the following endpoints:
+* /search?q=
+* /resources?q=
+* /schemas?q=
+* /texts?q=
+* /questions?q=
+* /comparisons?q=
+* /suggestions?q=
 
-* Return relevant question queries users ask about a product.
+e.g. 
+`/search?q={product brand}%20{product mpn}`
 
-7. `/comparisons`
 
-* Return comparison queries that users are looking for when comparing a product to another.
+* request `/search` for structured product information JSON about the product.
 
-8. `/interest`
+* request `/resources` for document links JSON about the product.
 
-* TODO: Return weekly interest (search demand) for a given product.
+* request `/questions` for popular question queries JSON related to the product.
 
-9. `/related`
+* request `/comparisons` for popular comparison queries JSON including the product.
 
-* TODO: Return related queries to a given product.
+* request `/suggestions` for popular queries JSON about the product.
 
-10. `/rising`
+* request `/schemas` for relevant schema JSON associated with the product.
 
-* TODO: Return queries associated with a given product that are rising in popularity.
+* request `/texts` for relevant text JSON associated with the product.
 
 ## Build Steps (Docker)
 
